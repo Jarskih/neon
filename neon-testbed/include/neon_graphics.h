@@ -21,6 +21,7 @@ namespace neon
 
 		bool create(const int size, const void* data);
 		void destroy();
+		bool update(int size, const void* data);
 
 		void bind() const;
 		bool is_valid() const;
@@ -96,6 +97,29 @@ namespace neon
 		void bind();
 
 		GLuint id_;
+	};
+
+	struct bitmap_font {
+		struct vertex {
+			float x_, y_;
+			float u_, v_;
+		};
+
+		bitmap_font();
+
+		bool create();
+		void destroy();
+
+		void render_text(const float p_x, const float p_y, const string& text);
+		void flush();
+
+		shader_program program_;
+		vertex_format format_;
+		vertex_buffer buffer_;
+		texture texture_;
+		sampler_state sampler_;
+		dynamic_array<vertex> vertices_;
+		glm::mat4 projection_;
 	};
 
 } //!neon

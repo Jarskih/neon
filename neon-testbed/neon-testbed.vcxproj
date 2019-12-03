@@ -91,7 +91,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="external\stb_image\stb_image.cpp" />
     <ClCompile Include="source\neon_graphics.cc" />
     <ClCompile Include="source\neon_testbed.cc" />
   </ItemGroup>
@@ -102,6 +101,7 @@
     <ClInclude Include="source\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="assets\bitmap_font_vertex_shader.shader" />
     <Text Include="assets\fragment_shader.txt" />
     <Text Include="assets\vertex_shader.txt" />
   </ItemGroup>

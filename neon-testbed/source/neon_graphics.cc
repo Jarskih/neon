@@ -3,6 +3,9 @@
 #include "neon_graphics.h"
 #include <cassert>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 namespace neon
 {
 
@@ -38,6 +41,19 @@ namespace neon
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDeleteBuffers(1, &id_); //Deletes space and handle.
 		id_ = 0;
+	}
+
+	bool vertex_buffer::update(int size, const void* data)
+	{
+		if (!is_valid())
+		{
+			return false;
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, id_);
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+		return true;
 	}
 
 	GLint shader_program::get_attrib_location(const string &name) const {
@@ -255,19 +271,29 @@ namespace neon
 			return false;
 		}
 
+		stbi_set_flip_vertically_on_load(true);
+
+		// read file
+		dynamic_array<uint8> file_content;
+		if (!file_system::read_file_content(filename, file_content)) {
+			return false;
+		}
+
+		// save image from memory to bitmap
+		int width = 0, height = 0, components = 0;
+		auto bitmap = stbi_load_from_memory(file_content.data(), (int)file_content.size(), &width, &height, &components, STBI_rgb_alpha);
+
+		if (!bitmap) {
+			return false;
+		}
+
 		glGenTextures(1, &id_);
 
 		glBindTexture(GL_TEXTURE_2D, id_);
 
-		uint32 bitmap[] = {
-			0xff0000ff, 0xff00ff00,
-			0xffff000f, 0xff00ffff,
-		};
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
 
-
-		// TODO load texture from file 
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
+		stbi_image_free(bitmap);
 		
 		GLenum error = glGetError();
 		return error == GL_NO_ERROR;
@@ -302,7 +328,7 @@ namespace neon
 		if (is_valid()) {
 			return false;
 		}
-	
+
 		glGenSamplers(1, &id_);
 		glBindSampler(0, id_);
 		glSamplerParameteri(id_, GL_TEXTURE_MIN_FILTER, filter);
@@ -333,4 +359,87 @@ namespace neon
 		glBindSampler(0, id_);
 	}
 
+	bitmap_font::bitmap_font() {
+
+	}
+
+	bool bitmap_font::create()
+	{
+		if (!program_.create("assets/bitmap_font_vertex_shader.shader", "assets/bitmap_font_fragment_shader.shader")) {
+			return false;
+		}
+
+		format_.add_attribute(0, 2, GL_FLOAT, false);
+		format_.add_attribute(0, 2, GL_FLOAT, false);
+
+		if (!buffer_.create(512, nullptr)) {
+			return false;
+		}
+
+		if (!texture_.create("assets/font_8x8.png")) {
+			return false;
+		}
+
+		if (sampler_.create(GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
+			return false;
+		}
+
+		projection_ = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
+
+		return true;
+	}
+
+	void bitmap_font::destroy()
+	{
+	}
+
+	void bitmap_font::render_text(const float p_x, const float p_y, const string& text) {
+		
+		const int characters_per_row = 16;
+		const float size = 8.0f;
+		const float uv1 = 1.0f / characters_per_row;
+		const int offset = 2;
+		for (auto &character : text) {
+			int index = character - ' ';
+			int x = index % characters_per_row;
+			int y = index / characters_per_row + offset;
+
+			float u = (float)x / characters_per_row;
+			float v = (float)y / characters_per_row;
+
+			vertex vertices[6] = {
+				{p_x + x,        p_y + y,         u,        v       },
+				{p_x + x + size, p_y + y,         u + uv1,  v       },
+				{p_x + x + size, p_y + y + size,  u + uv1,  v + uv1 },
+
+				{p_x + x + size, p_y + y + size,  u + uv1,  v + uv1 },
+				{p_x + x,        p_y + y + size,  u,        v + uv1 },
+				{p_x + x,        p_y + y,         u,        v       },
+			};
+
+			for (auto& vert : vertices) {
+				vertices_.push_back(vert);
+			}
+		}
+	}
+
+	void bitmap_font::flush()
+	{
+		// note: submit vertices from CPU to GPU
+		int size = (int)(sizeof(vertex) * vertices_.size());
+		buffer_.update(size , vertices_.data());
+
+		// note: render the thing!
+		glDisable(GL_DEPTH_TEST);
+		
+		program_.bind();
+		program_.set_uniform_mat4("projection", projection_);
+		buffer_.bind();
+		format_.bind();
+		texture_.bind();
+		sampler_.bind();
+		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertices_.size());
+
+		vertices_.clear();
+	}
 } //!neon

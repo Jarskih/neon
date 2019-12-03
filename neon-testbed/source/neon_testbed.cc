@@ -71,8 +71,6 @@ namespace neon {
 	   glGenVertexArrays(1, &vao);
 	   glBindVertexArray(vao);
 
-	   glEnable(GL_DEPTH_TEST);
-
 	   vertex vertices[] =
 	   {
 		   //Yellow Triangle
@@ -85,56 +83,56 @@ namespace neon {
 		   // cube 
 
 		   // front 1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //0
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //1
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //2
+		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
+		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
 		   // front 2
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		0.5f, 1.0}, //2
-		   { 0.0f,  1.0f, 1.0f, 0xff00ffff,		0.5f, 1.0}, //3
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0}, //0
+		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //2
+		   { 0.0f,  1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
+		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //0
 		   // right side 1
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
 		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //6
+		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
 		   // right side 2
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //6
-		   { 1.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //2
+		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
+		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+		   { 1.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0f}, //2
 		  // left side 1
-		   {0.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //0
 		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //3
+		   {0.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0}, //0
+		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
 		  // left side 2
-		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //7
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //3
+		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0}, //7
 		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
+		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
 
 		  // bottom 1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //0
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //1
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.5f, 1.0},  //4
+			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
+		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f},  //4
 		  // bottom 2
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		0.5f, 1.0f}, //1
-	       { 1.0f, 0.0f, 0.0f, 0xff00ffff,		0.5f, 1.0f}, //5
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.5f, 1.0}, //4
+		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
+	       { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
 
 		  // back 1
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //6
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //4
-		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //5
+		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
+		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
 		  // back 2									  
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //4
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //6
 		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
+		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
 
 		   //top 1
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //3
-		  {1.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //6
+		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
+		  {1.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
+		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
 		   //top 2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //6
-		  {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //7
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //3
+		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+		  {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
+		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
 	   };
 	   
 	   if (!vbo_.create(sizeof(vertices), vertices))
@@ -152,7 +150,7 @@ namespace neon {
 	   format_.add_attribute(2, 2, GL_FLOAT, false);
 
 	   // Create texture
-	   if (!texture_.create("")) {
+	   if (!texture_.create("assets/test.jpg")) {
 		   return false;
 	   }
 
@@ -191,12 +189,14 @@ namespace neon {
          return false;
       }
 
+	  // rotation
 	  rotation_ += dt.as_seconds();
 
 	  glm::mat4 world = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 
-	  world = glm::rotate(world, rotation_, glm::vec3(1.0f, 1.0f, 0.0f));
+	  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
 
+	  // clear
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -207,6 +207,14 @@ namespace neon {
 	  format_.bind();
 	  texture_.bind();
 	  sampler_.bind();
+	  glEnable(GL_DEPTH_TEST);
+	  
+	  // Culling
+	  glEnable(GL_CULL_FACE);
+	  glCullFace(GL_BACK);
+	  glFrontFace(GL_CCW);
+
+	  // Draw
 	  glDrawArrays(GL_TRIANGLES, 0, 36);
 
       return true;
