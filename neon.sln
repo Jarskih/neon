@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29403.142
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neon-core", "neon-core\neon-core.vcxproj", "{67892473-04F5-4AC7-9AFB-F1DF34F796B9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neon-main", "neon-main\neon-main.vcxproj", "{9E242640-497D-4131-A02E-9C8B74BA0901}"
+	ProjectSection(ProjectDependencies) = postProject
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9} = {67892473-04F5-4AC7-9AFB-F1DF34F796B9}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "neon-testbed", "neon-testbed\neon-testbed.vcxproj", "{45E18157-19D9-4E90-AFD7-B0540AB6836E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9E242640-497D-4131-A02E-9C8B74BA0901} = {9E242640-497D-4131-A02E-9C8B74BA0901}
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9} = {67892473-04F5-4AC7-9AFB-F1DF34F796B9}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9}.Debug|x64.ActiveCfg = Debug|x64
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9}.Debug|x64.Build.0 = Debug|x64
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9}.Release|x64.ActiveCfg = Release|x64
+		{67892473-04F5-4AC7-9AFB-F1DF34F796B9}.Release|x64.Build.0 = Release|x64
+		{9E242640-497D-4131-A02E-9C8B74BA0901}.Debug|x64.ActiveCfg = Debug|x64
+		{9E242640-497D-4131-A02E-9C8B74BA0901}.Debug|x64.Build.0 = Debug|x64
+		{9E242640-497D-4131-A02E-9C8B74BA0901}.Release|x64.ActiveCfg = Release|x64
+		{9E242640-497D-4131-A02E-9C8B74BA0901}.Release|x64.Build.0 = Release|x64
+		{45E18157-19D9-4E90-AFD7-B0540AB6836E}.Debug|x64.ActiveCfg = Debug|x64
+		{45E18157-19D9-4E90-AFD7-B0540AB6836E}.Debug|x64.Build.0 = Debug|x64
+		{45E18157-19D9-4E90-AFD7-B0540AB6836E}.Release|x64.ActiveCfg = Release|x64
+		{45E18157-19D9-4E90-AFD7-B0540AB6836E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A973B12-6754-44EF-BEEC-753D007060A5}
+	EndGlobalSection
+EndGlobal
