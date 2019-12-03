@@ -8,6 +8,9 @@
 
 #include "neon_graphics.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
 namespace neon 

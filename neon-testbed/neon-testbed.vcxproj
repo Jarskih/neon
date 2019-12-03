@@ -91,12 +91,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="external\stb_image\stb_image.cpp" />
     <ClCompile Include="source\neon_graphics.cc" />
     <ClCompile Include="source\neon_testbed.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\stb_image\stb_image.h" />
     <ClInclude Include="include\neon_graphics.h" />
     <ClInclude Include="include\neon_testbed.h" />
+    <ClInclude Include="source\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="assets\fragment_shader.txt" />
