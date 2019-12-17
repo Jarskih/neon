@@ -31,6 +31,7 @@ namespace neon
 
 	  shader_program program_;
 	  vertex_buffer vbo_;
+	  index_buffer index_buffer_;
 	  vertex_format format_;
 	  texture texture_;
 	  sampler_state sampler_;

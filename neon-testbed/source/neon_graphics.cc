@@ -617,24 +617,25 @@ namespace neon
 
 	void fps_camera_controller::update(const time& deltatime)
 	{
-		constexpr float camera_speed = 5.0f;
+		constexpr float camera_speed = 50.0f;
+		constexpr float camera_turn_speed = 5.0f;
 		const float amount = camera_speed * deltatime.as_seconds();
 
 		// Camera Movement
 		if (keyboard_.is_down(KEYCODE_W)) {
-			camera_.forward(-amount);
+			camera_.forward(-amount * deltatime.as_seconds() * camera_speed);
 		}
 
 		if (keyboard_.is_down(KEYCODE_S)) {
-			camera_.forward(amount);
+			camera_.forward(amount * deltatime.as_seconds() * camera_speed);
 		}
 
 		if (keyboard_.is_down(KEYCODE_A)) {
-			camera_.sidestep(-amount);
+			camera_.sidestep(-amount * deltatime.as_seconds() * camera_speed);
 		}
 
 		if (keyboard_.is_down(KEYCODE_D)) {
-			camera_.sidestep(amount);
+			camera_.sidestep(amount * deltatime.as_seconds() * camera_speed);
 		}
 
 		// Look rotation
@@ -647,11 +648,11 @@ namespace neon
 			mouse_delta = mouse_delta - mouse_position_;
 
 			if (fabsf(mouse_delta.x) > 0.0f) {
-				camera_.rotate_y(glm::radians(mouse_delta.x) * deltatime.as_seconds() * camera_speed);
+				camera_.rotate_y(glm::radians(mouse_delta.x) * deltatime.as_seconds() * camera_turn_speed);
 			}
 
 			if (fabsf(mouse_delta.y) > 0.0f) {
-				camera_.rotate_x(glm::radians(mouse_delta.y) * deltatime.as_seconds() * camera_speed);
+				camera_.rotate_x(glm::radians(mouse_delta.y) * deltatime.as_seconds() * camera_turn_speed);
 			}
 		}
 
@@ -660,7 +661,7 @@ namespace neon
 			float mouse_delta_x = (float)mouse_.x_ - mouse_position_.x;
 
 			if (fabsf(mouse_delta_x) > 0) {
-				camera_.rotate_z(glm::radians(mouse_delta_x) * deltatime.as_seconds() * camera_speed);
+				camera_.rotate_z(glm::radians(mouse_delta_x) * deltatime.as_seconds() * camera_turn_speed);
 			}
 		}
 
@@ -856,11 +857,11 @@ namespace neon
 		}
 		
 		dynamic_array<uint32> index_array;
-		int x = 1; // pic width
-		int y = 1; // pic height
-		for (uint32 index = 0; index <= (uint32)width * (uint32)height; index++) {
+		int x = 0; // pic width
+		int y = 0; // pic height
+		for (uint32 index = 0; index < (uint32)width * (uint32)height; index ++) {
 
-			if (x >= width) {
+			if (x >= width-1) {
 				x = 0;
 				y++;
 				continue;
@@ -868,7 +869,7 @@ namespace neon
 
 			x++;
 
-			if (y >= height) {
+			if (y >= height-1) {
 				break;
 			}
 
@@ -926,6 +927,7 @@ namespace neon
 		sampler_.bind();
 
 		// Culling
+		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
