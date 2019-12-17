@@ -28,13 +28,20 @@ namespace neon
       virtual bool enter() final;
       virtual void exit() final;
       virtual bool tick(const time &dt) final;
-	  float rotation_;
 
 	  shader_program program_;
 	  vertex_buffer vbo_;
 	  vertex_format format_;
 	  texture texture_;
 	  sampler_state sampler_;
+
+	  float rotation_;
+	  bitmap_font font_;
+
+	  fps_camera camera_;
+	  fps_camera_controller controller_;
+	  skybox skybox_;
+	  terrain terrain_;
    };
 } // !neon
 

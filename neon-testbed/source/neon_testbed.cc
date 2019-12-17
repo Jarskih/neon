@@ -61,7 +61,7 @@ namespace neon {
 
 
    // note: derived application class
-   testbed::testbed() : rotation_(0)
+   testbed::testbed() : rotation_(0.0f), controller_(camera_, keyboard_, mouse_)
    {
    }
    
@@ -150,7 +150,7 @@ namespace neon {
 	   format_.add_attribute(2, 2, GL_FLOAT, false);
 
 	   // Create texture
-	   if (!texture_.create("assets/test.jpg")) {
+	   if (!texture_.create("assets/test.png")) {
 		   return false;
 	   }
 
@@ -178,6 +178,21 @@ namespace neon {
 		   // ...
 	   };
 
+	   // Create text font
+	   if (!font_.create()) {
+		   return false;
+	   };
+
+	   if (!skybox_.create()) {
+		   return false;
+	   };
+
+	   if (!terrain_.create("assets/heightmap/heightmap.png", "assets/heightmap/texture.png")) {
+		   return false;
+	   }
+
+	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
+
       return true;
    }
 
@@ -189,6 +204,9 @@ namespace neon {
          return false;
       }
 
+	  // Update camera
+	  controller_.update(dt);
+
 	  // rotation
 	  rotation_ += dt.as_seconds();
 
@@ -196,11 +214,20 @@ namespace neon {
 
 	  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
 
+	  string text = "dt: " + std::to_string(dt.as_seconds());
+	  font_.render_text(2.0f, 2.0f, text);
+
 	  // clear
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	  skybox_.render(camera_);
+
+	  terrain_.render(camera_);
+
 	  program_.bind();
+	  program_.set_uniform_mat4("projection", camera_.projection_);
+	  program_.set_uniform_mat4("view", camera_.view_);
 	  program_.set_uniform_mat4("world", world);
 
 	  vbo_.bind();
@@ -216,6 +243,9 @@ namespace neon {
 
 	  // Draw
 	  glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	  // Draw text
+	  font_.flush();
 
       return true;
    }

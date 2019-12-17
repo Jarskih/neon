@@ -25,8 +25,25 @@ namespace neon
 
 		void bind() const;
 		bool is_valid() const;
+		// primitive: Specifies what kind of primitives to render. Symbolic constants for example: GL_TRIANGLES
+		void render(GLenum primitive, int start, int count);
 
 		GLuint id_;
+	};
+
+	struct index_buffer 
+	{
+		index_buffer();
+
+		bool create(const int size, const GLenum type, const void* data);
+		void destroy();
+
+		bool is_valid() const;
+		void bind() const;
+		void render(GLenum primitive, int start, int count);
+
+		GLuint id_;
+		GLenum type_; // Note: type -> GL_UNSIGNED_SHORT or GL_UNSIGNED_INT
 	};
 
 	struct shader_program
@@ -78,13 +95,15 @@ namespace neon
 	struct texture {
 		texture();
 
-		bool create(const std::string& filename);
+		bool create(const std::string& filename, bool flip = true);
+		bool create_cubemap(int width, int height, const void **data);
 		void destroy();
 		
 		bool is_valid() const;
 		void bind();
 
 		GLuint id_;
+		GLenum type_;
 	};
 
 	struct sampler_state {
@@ -120,6 +139,81 @@ namespace neon
 		sampler_state sampler_;
 		dynamic_array<vertex> vertices_;
 		glm::mat4 projection_;
+	};
+
+	struct fps_camera {
+		fps_camera();
+
+		void update();
+
+		void set_perspective(float fov, float aspect, float znear, float zfar);
+		void rotate_x(float amount);
+		void rotate_y(float amount);
+		void rotate_z(float amount);
+		void forward(float amount);
+		void sidestep(float amount);
+
+		float yaw_;
+		float pitch_;
+		float roll_;
+
+		glm::vec3 x_axis;
+		glm::vec3 y_axis;
+		glm::vec3 z_axis;
+		glm::vec3 position_;
+
+		glm::mat4 projection_;
+		glm::mat4 view_;
+	};
+
+	struct fps_camera_controller {
+		fps_camera_controller(fps_camera& camera, keyboard& kb, mouse& m);
+		
+		void update(const time &deltatime);
+
+		fps_camera& camera_;
+		keyboard& keyboard_;
+		mouse& mouse_;
+		glm::vec2 mouse_position_;
+	};
+
+	struct skybox {
+		skybox();
+
+		bool create();
+		void destroy();
+
+		void render(const fps_camera& camera);
+	
+		shader_program program_;
+		vertex_buffer buffer_;
+		vertex_format format_;
+		sampler_state sampler_;
+		texture cubemap_;
+	};
+
+	struct terrain {
+
+		struct vertex {
+			glm::vec3 position_;
+			glm::vec2 texcoord_;
+			glm::vec3 normal_;
+		};
+
+		terrain();
+
+		bool create(const string& heightmap_filemap, const string& texture_filename);
+		void destroy();
+
+		void render(const fps_camera& camera);
+
+		shader_program program_;
+		vertex_buffer vertex_buffer_;
+		vertex_format format_;
+		index_buffer index_buffer_;
+		texture texture_;
+		sampler_state sampler_;
+		int index_count_;
 	};
 
 } //!neon
