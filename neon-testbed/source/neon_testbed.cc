@@ -10,6 +10,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #pragma warning(pop)
 
+//#include <imgui/imgui.h>
+//#include <imgui/imgui_impl_glfw.h>
+//#include <imgui/imgui_impl_opengl3.h>
+
 namespace neon {
    // note: application factory
    application *application::create(int &width, int &height, string &title) {
@@ -191,11 +195,59 @@ namespace neon {
 		   return false;
 	   }
 
-	 // if (!sphere_.create("assets/sphere/earth.png", 1, 36, 36)) {
-	 //	   return false;
-	 //  }
+	   // Planets
+	   sun_.position_ = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
+	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36)) {
+		   return false;
+	   }
+
+	   mercury_.position_ = glm::vec3(58.0f, 0.0f, 0.0f);
+	   if (!mercury_.create("assets/sphere/2k_mercury.jpg", 2.440f, 36, 36)) {
+		   return false;
+	   }
+
+	   venus_.position_ = glm::vec3(108.0f, 0.0f, 0.0f);
+	   if (!venus_.create("assets/sphere/2k_venus_atmosphere.jpg", 6.052f, 36, 36)) {
+		   return false;
+	   }
+
+	   earth_.position_ = glm::vec3(150.0f, 0.0f, 0.0f);
+	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36)) {
+	 	   return false;
+	   }
+
+	   moon_.position_ = glm::vec3(158.0f, 0.0f, 0.0f);
+	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36)) {
+		   return false;
+	   }
+
+	   mars_.position_ = glm::vec3(227.0f, 0.0f, 0.0f);
+	   if (!mars_.create("assets/sphere/2k_mars.jpg", 3.397f, 36, 36)) {
+		   return false;
+	   }
+
+	   jupiter_.position_ = glm::vec3(778.0f, 0.0f, 0.0f);
+	   if (!jupiter_.create("assets/sphere/2k_jupiter.jpg", 71.492f, 36, 36)) {
+		   return false;
+	   }
+
+	   saturn_.position_ = glm::vec3(1434.0f, 0.0f, 0.0f);
+	   if (!saturn_.create("assets/sphere/2k_saturn.jpg", 60.268f, 36, 36)) {
+		   return false;
+	   }
+
+	   uranus_.position_ = glm::vec3(2871.0f, 0.0f, 0.0f);
+	   if (!uranus_.create("assets/sphere/2k_uranus.jpg", 25.559f, 36, 36)) {
+		   return false;
+	   }
+
+	   neptune_.position_ = glm::vec3(4496.0f, 0.0f, 0.0f);
+	   if (!neptune_.create("assets/sphere/2k_neptune.jpg", 24.766f, 36, 36)) {
+		   return false;
+	   }
+
+	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
 
       return true;
    }
@@ -211,14 +263,7 @@ namespace neon {
 	  // Update camera
 	  controller_.update(dt);
 
-	  // rotation
-	  rotation_ += dt.as_seconds();
-
-	  glm::mat4 world = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
-
-	  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
-
-	  string text = "dt: " + std::to_string(dt.as_seconds());
+	  string text = "dt: " + std::to_string(dt.as_milliseconds()) + " (FPS:" + std::to_string(1.0f/dt.as_seconds()) + ")";
 	  font_.render_text(2.0f, 2.0f, text);
 
 	  // clear
@@ -227,30 +272,18 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	 // sphere_.render(camera_);
-
-	 terrain_.render(camera_);
-
-	  /*
-	  program_.bind();
-	  program_.set_uniform_mat4("projection", camera_.projection_);
-	  program_.set_uniform_mat4("view", camera_.view_);
-	  program_.set_uniform_mat4("world", world);
-
-	  vbo_.bind();
-	  format_.bind();
-	  texture_.bind();
-	  sampler_.bind();
-	  glEnable(GL_DEPTH_TEST);
-	  
-	  // Culling
-	  glEnable(GL_CULL_FACE);
-	  glCullFace(GL_BACK);
-	  glFrontFace(GL_CCW);
-
-	  // Draw
-	  glDrawArrays(GL_TRIANGLES, 0, 36);
-	  */
+	  // terrain_.render(camera_);
+	  earth_.render(camera_, dt);
+	  moon_.pivot_ = earth_.position_;
+	  moon_.render(camera_, dt);
+	  mars_.render(camera_, dt);
+	  jupiter_.render(camera_, dt);
+	  mercury_.render(camera_, dt);
+	  neptune_.render(camera_, dt);
+	  saturn_.render(camera_, dt);
+      uranus_.render(camera_, dt);
+      venus_.render(camera_, dt);
+	  sun_.render(camera_, dt);
 
 	  // Draw text
 	  font_.flush();

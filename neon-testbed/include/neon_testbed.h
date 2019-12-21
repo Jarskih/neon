@@ -42,7 +42,16 @@ namespace neon
 	  fps_camera_controller controller_;
 	  skybox skybox_;
 	  terrain terrain_;
-	  sphere sphere_;
+	  sphere earth_;
+	  sphere moon_;
+	  sphere mars_;
+	  sphere jupiter_;
+	  sphere mercury_;
+	  sphere neptune_;
+	  sphere saturn_;
+	  sphere uranus_;
+	  sphere venus_;
+	  sphere sun_;
    };
 } // !neon
 

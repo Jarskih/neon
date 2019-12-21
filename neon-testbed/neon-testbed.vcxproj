@@ -46,6 +46,7 @@
     <OutDir>..\build\</OutDir>
     <IntDir>..\build\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName).$(PlatformShortName).$(Configuration.toLower())</TargetName>
+    <LibraryPath>C:\Programming\neon2\neon-testbed\external\imgui\examples\libs\glfw\lib-vc2010-64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\build\</OutDir>
@@ -61,7 +62,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableSpecificWarnings>4100;4189;4505;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>include\;external\glm\include\;..\neon-core\include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include\;external\glm\include\;..\neon-core\include\;external\;external\imgui\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -229,14 +229,19 @@ namespace neon
 		sphere();
 
 		bool create(std::string texture_filename, float radius, int stacks, int sectors);
-		void render(fps_camera camera);
+		void render(fps_camera camera, const time& dt);
 
+		glm::vec3 position_;
 		float radius_;
 		int stacks_;
 		int sectors_;
 		float sectorStep_;
 		float stackStep_;
 		int index_count_;
+		float rotation_;
+		float spin_;
+		float rotationSpeed_;
+		glm::vec3 pivot_;
 
 		dynamic_array<vertex> vertices_;
 		shader_program program_;

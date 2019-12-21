@@ -977,12 +977,15 @@ namespace neon
 	}
 
 
-	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0)
+	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0)
 	{
 	}
 
 	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors) {
 		
+		radius_ = radius;
+		stacks_ = stacks;
+		sectors_ = sectors;
 		constexpr float PI = 3.14159265359f;
 
 		vertices_.clear();
@@ -1083,12 +1086,29 @@ namespace neon
 		return true;
 	}
 
-	void sphere::render(neon::fps_camera camera)
+	void sphere::render(neon::fps_camera camera, const time& dt)
 	{
+		// rotation
+		rotation_ += dt.as_seconds() * rotationSpeed_;
+		spin_ += dt.as_seconds();
+
+		glm::mat4 transform = glm::mat4(1.0);
+
+		transform = glm::translate(transform, pivot_);
+
+		// Rotate around origin (sun)
+	    transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		// Translate to orbit
+		transform = glm::translate(transform, position_);
+
+		// Rotate around self
+		transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+
 		program_.bind();
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
-		program_.set_uniform_mat4("world", glm::mat4(1));
+		program_.set_uniform_mat4("world", transform);
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -1099,7 +1119,7 @@ namespace neon
 		// Culling
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		glFrontFace(GL_CW);
 
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);

@@ -3,6 +3,7 @@
 uniform sampler2D diffuse;
 
 in vec2 f_texcoord;
+
 out vec4 frag_color;
 
 void main() 
