@@ -12,7 +12,6 @@
 
 namespace neon 
 {
-
 	struct vertex 
 	{
 		float x_;
@@ -43,6 +42,7 @@ namespace neon
 	  fps_camera_controller controller_;
 	  skybox skybox_;
 	  terrain terrain_;
+	  sphere sphere_;
    };
 } // !neon
 

@@ -59,6 +59,8 @@ namespace neon
 		bool set_uniform_mat4(const string& name, const glm::mat4 &value);
 		bool set_uniform_vec4(const string& name, const glm::vec4 &value);
 
+		bool set_uniform_vec3(const string& name, const glm::vec3& value);
+
 		bool is_valid() const;
 		void bind() const;
 
@@ -214,6 +216,35 @@ namespace neon
 		texture texture_;
 		sampler_state sampler_;
 		int index_count_;
+	};
+	
+	struct sphere {
+
+		struct vertex {
+			glm::vec3 position_;
+			glm::vec2 texcoord_;
+			glm::vec3 normal_;
+		};
+
+		sphere();
+
+		bool create(std::string texture_filename, float radius, int stacks, int sectors);
+		void render(fps_camera camera);
+
+		float radius_;
+		int stacks_;
+		int sectors_;
+		float sectorStep_;
+		float stackStep_;
+		int index_count_;
+
+		dynamic_array<vertex> vertices_;
+		shader_program program_;
+		vertex_buffer vertex_buffer_;
+		vertex_format format_;
+		index_buffer index_buffer_;
+		texture texture_;
+		sampler_state sampler_;
 	};
 
 } //!neon

@@ -137,6 +137,18 @@ namespace neon
 		return true;
 	}
 
+	bool shader_program::set_uniform_vec3(const string& name, const glm::vec3& value) {
+		GLuint location = get_uniform_location(name);
+
+		if (location == -1) {
+			return false;
+		}
+
+		glUniform3fv(location, 1, glm::value_ptr(value));
+
+		return true;
+	}
+
 	bool vertex_buffer::is_valid() const
 	{
 		return id_ != 0;
@@ -859,6 +871,7 @@ namespace neon
 		dynamic_array<uint32> index_array;
 		int x = 0; // pic width
 		int y = 0; // pic height
+		uint32 offset = 1;
 		for (uint32 index = 0; index < (uint32)width * (uint32)height; index ++) {
 
 			if (x >= width-1) {
@@ -874,7 +887,7 @@ namespace neon
 			}
 
 			// First triangle
-			uint32 offset = 1;
+	
 			index_array.push_back(index);
 			index_array.push_back(index + offset);
 			index_array.push_back(index + offset + width);
@@ -883,6 +896,33 @@ namespace neon
 			index_array.push_back(index + offset + width);
 			index_array.push_back(index + width);
 			index_array.push_back(index);
+		}
+
+		for (int i = 0; i <= vertices.size(); i++) {
+			// add normal to vertex
+
+			vertex a = vertices[index_array[i]];
+			vertex b = vertices[index_array[i + 1]];
+			vertex c = vertices[index_array[i + 2]];
+
+			glm::vec3 BA = glm::vec3(b.position_ - a.position_);
+			glm::vec3 CA = glm::vec3(c.position_ - a.position_);
+
+			vertices[index_array[i]].normal_ += glm::cross(BA, CA);
+
+			glm::vec3 AB = glm::vec3(a.position_ - b.position_);
+			glm::vec3 CB = glm::vec3(c.position_ - b.position_);
+
+			vertices[index_array[i + 1]].normal_ += glm::cross(c.position_ - b.position_, a.position_ - b.position_);
+			
+			glm::vec3 AC = glm::vec3(a.position_ - b.position_);
+			glm::vec3 BC = glm::vec3(c.position_ - b.position_);
+			
+			vertices[index_array[i + 2]].normal_ += glm::cross(a.position_ - c.position_, b.position_ - c.position_);
+		}
+
+		for (auto vertex : vertices) {
+			vertex.normal_ = glm::normalize(vertex.normal_);
 		}
 
 		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
@@ -914,6 +954,136 @@ namespace neon
 	}
 
 	void terrain::render(const fps_camera& camera)
+	{
+		program_.bind();
+		program_.set_uniform_mat4("projection", camera.projection_);
+		program_.set_uniform_mat4("view", camera.view_);
+		program_.set_uniform_mat4("world", glm::mat4(1));
+		program_.set_uniform_vec3("light_direction", glm::vec3(0, 1, 0));
+
+		vertex_buffer_.bind();
+		index_buffer_.bind();
+		format_.bind();
+		texture_.bind();
+		sampler_.bind();
+
+		// Culling
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CW);
+
+		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
+	}
+
+
+	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0)
+	{
+	}
+
+	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors) {
+		
+		constexpr float PI = 3.14159265359f;
+
+		vertices_.clear();
+
+		sectorStep_ = 2.0f * PI / sectors;
+		stackStep_ = PI / stacks;
+
+		// Calculate vertex positions on the sphere
+		for (int stack = 0; stack <= stacks_; ++stack) {
+
+			float stackAngle = PI / 2 - stack * stackStep_;
+			float xy = radius_ * cosf(stackAngle);
+			float z = radius_ * sinf(stackAngle);
+
+			float lengthInv = 1.0f / radius_;
+
+			// add (sectorCount +1) vertices per stack
+
+			for (int sector = 0; sector <= sectors_; ++sector) {
+				float sectorAngle = sector * sectorStep_;
+
+				vertex vertex;
+
+				// Vertex positions
+				float x = xy * cosf(sectorAngle);
+				float y = xy * sinf(sectorAngle);
+
+				vertex.position_ = { x, y, z };
+
+				// Normalized vertex normals 
+				float nx = x * lengthInv;
+				float ny = y * lengthInv;
+				float nz = z * lengthInv;
+				vertex.normal_ = { nx, ny, nz };
+
+				// text coords (range: 0 - 1)
+				float u = (float)sector / sectors_;
+				float v = (float)stack / stacks_;
+				vertex.texcoord_ = { u, v };
+
+				vertices_.push_back(vertex);
+			}
+		}
+
+		if (!vertex_buffer_.create(sizeof(vertex) * (int)vertices_.size(), vertices_.data())) {
+			return false;
+		}
+
+		neon::dynamic_array<int> index_array;
+
+		int v1, v2;
+
+		for (int y = 0; y < sectors_; ++y) {
+
+			v1 = y * (sectors_ + 1); // beginning of the current stack
+			v2 = v1 + sectors_ + 1;  // beginning of next stack
+
+			for (int x = 0; x < sectors_; ++x, ++v1, ++v2) {
+				// 2 triangles per sector excluding first and last stacks
+				// v1 => v2 => v1+1
+
+				if (y != 0) {
+					index_array.push_back(v1);
+					index_array.push_back(v2);
+					index_array.push_back(v1 + 1);
+				}
+
+				// v1+1 => v2 => v2+1
+				if (y != (stacks_ - 1)) {
+					index_array.push_back(v1 + 1);
+					index_array.push_back(v2);
+					index_array.push_back(v2 + 1);
+				}
+			}
+		}
+
+		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
+			return false;
+		}
+
+		index_count_ = (int)index_array.size();
+		format_.add_attribute(0, 3, GL_FLOAT, false);
+		format_.add_attribute(1, 2, GL_FLOAT, false);
+		format_.add_attribute(2, 3, GL_FLOAT, false);
+
+		if (!program_.create("assets/sphere/vertex_shader.shader", "assets/sphere/fragment_shader.shader")) {
+			return false;
+		}
+
+		if (!sampler_.create(GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
+			return false;
+		}
+
+		if (!texture_.create(texture_filename, false)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	void sphere::render(neon::fps_camera camera)
 	{
 		program_.bind();
 		program_.set_uniform_mat4("projection", camera.projection_);

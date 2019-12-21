@@ -191,6 +191,10 @@ namespace neon {
 		   return false;
 	   }
 
+	 // if (!sphere_.create("assets/sphere/earth.png", 1, 36, 36)) {
+	 //	   return false;
+	 //  }
+
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
 
       return true;
@@ -223,8 +227,11 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	  terrain_.render(camera_);
+	 // sphere_.render(camera_);
 
+	 terrain_.render(camera_);
+
+	  /*
 	  program_.bind();
 	  program_.set_uniform_mat4("projection", camera_.projection_);
 	  program_.set_uniform_mat4("view", camera_.view_);
@@ -243,6 +250,7 @@ namespace neon {
 
 	  // Draw
 	  glDrawArrays(GL_TRIANGLES, 0, 36);
+	  */
 
 	  // Draw text
 	  font_.flush();
