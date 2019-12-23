@@ -112,7 +112,7 @@ namespace neon {
 		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
 
 		  // bottom 1
-			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,	1.0f, 0.0f}, //1
 		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
 		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f},  //4
 		  // bottom 2
@@ -274,7 +274,7 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	//  terrain_.render(camera_);
+	  terrain_.render(camera_);
 	  earth_.render(camera_, dt);
 	  moon_.pivot_ = earth_.position_;
 	  moon_.render(camera_, dt);

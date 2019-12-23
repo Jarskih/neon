@@ -844,21 +844,121 @@ namespace neon
 		dynamic_array<vertex> vertices;
 		float scale = 0.05f;
 
-		for (int32 h = 0; h < height; h++) {
-			for (int32 w = 0; w < width; w++) {
-				const uint32 offset = w * channels + h * stride;
+		for (int32 x = 0; x < height; x++) {
+			for (int32 y = 0; y < width; y++) {
+				const uint32 offset = x * channels + y * stride;
 				const uint8 *rbga = heightmap.data() + offset;
  
-				vertex vertex_ = vertex();
-				vertex_.position_ = { w, rbga[2] * scale, h };
+				vertex vertex_;
+				vertex_.position_ = { x, rbga[2] * scale, y };
 
 				// calculate uv in range of 0-1
-				float u = (float)w / width;
-				float v = (float)h / height;
+				float u = (float)x / width;
+				float v = (float)y / height;
 				vertex_.texcoord_ = { u, v };
 
 				// normals
-				vertex_.normal_ = glm::vec3(0);
+				{
+					glm::vec3 normal;
+
+					// +-- + -- +
+					// | \ | \ |
+					// +-- + -- +
+					// | \ | \ |
+					// +-- + -- +
+
+					// first triangle
+					{
+						vertex v0;
+						v0.position_ = { x, rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x, rbga[2] * scale, y - 1 };
+						vertex v2;
+						v2.position_ = { x + 1, rbga[2] * scale, y };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					// second triangle
+					{
+						vertex v0;
+						v0.position_ = { x, rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x + 1, rbga[2] * scale, y };
+						vertex v2;
+						v2.position_ = { x, rbga[2] * scale, y + 1 };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					// third triangle
+					{
+						vertex v0;
+						v0.position_ = { x, rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x + 1, rbga[2] * scale, y + 1 };
+						vertex v2;
+						v2.position_ = { x, rbga[2] * scale, y + 1 };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					// fourth triangle
+					{
+						vertex v0;
+						v0.position_ = { x, rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x, rbga[2] * scale, y + 1 };
+						vertex v2;
+						v2.position_ = { x - 1, rbga[2] * scale, y };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					// fifth triangle
+					{
+						vertex v0;
+						v0.position_ = { x, rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x - 1, rbga[2] * scale, y };
+						vertex v2;
+						v2.position_ = { x - 1, rbga[2] * scale, y - 1 };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					// sixth triangle
+					{
+						vertex v0;
+						v0.position_ = { x , rbga[2] * scale, y };
+						vertex v1;
+						v1.position_ = { x - 1, rbga[2] * scale, y - 1 };
+						vertex v2;
+						v2.position_ = { x, rbga[2] * scale, y - 1 };
+
+						const glm::vec3 side1 = v1.position_ - v0.position_;
+						const glm::vec3 side2 = v2.position_ - v1.position_;
+						const glm::vec3 cross = glm::cross(side1, side2);
+						normal += cross;
+					}
+
+					vertex_.normal_ = glm::normalize(normal);
+				}
 
 				vertices.push_back(vertex_);
 			}
@@ -898,33 +998,6 @@ namespace neon
 			index_array.push_back(index);
 		}
 
-		for (int i = 0; i <= vertices.size(); i++) {
-			// add normal to vertex
-
-			vertex a = vertices[index_array[i]];
-			vertex b = vertices[index_array[i + 1]];
-			vertex c = vertices[index_array[i + 2]];
-
-			glm::vec3 BA = glm::vec3(b.position_ - a.position_);
-			glm::vec3 CA = glm::vec3(c.position_ - a.position_);
-
-			vertices[index_array[i]].normal_ += glm::cross(BA, CA);
-
-			glm::vec3 AB = glm::vec3(a.position_ - b.position_);
-			glm::vec3 CB = glm::vec3(c.position_ - b.position_);
-
-			vertices[index_array[i + 1]].normal_ += glm::cross(c.position_ - b.position_, a.position_ - b.position_);
-			
-			glm::vec3 AC = glm::vec3(a.position_ - b.position_);
-			glm::vec3 BC = glm::vec3(c.position_ - b.position_);
-			
-			vertices[index_array[i + 2]].normal_ += glm::cross(a.position_ - c.position_, b.position_ - c.position_);
-		}
-
-		for (auto vertex : vertices) {
-			vertex.normal_ = glm::normalize(vertex.normal_);
-		}
-
 		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
 			return false;
 		}
@@ -959,7 +1032,7 @@ namespace neon
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", glm::mat4(1));
-		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
+		program_.set_uniform_vec3("light_direction", glm::vec3(1, 0.5f, 1));
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -969,7 +1042,7 @@ namespace neon
 
 		// Culling
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
 
