@@ -217,7 +217,9 @@ namespace neon {
 	 	   return false;
 	   }
 
-	   moon_.position_ = glm::vec3(158.0f, 0.0f, 0.0f);
+	   moon_.position_ = glm::vec3(15.0f, 0.0f, 0.0f); // Relative to parent (earth)
+	   moon_.pivot_ = earth_.position_;
+	   moon_.isMoon_ = true;
 	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36)) {
 		   return false;
 	   }
@@ -272,7 +274,7 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	  // terrain_.render(camera_);
+	//  terrain_.render(camera_);
 	  earth_.render(camera_, dt);
 	  moon_.pivot_ = earth_.position_;
 	  moon_.render(camera_, dt);

@@ -242,6 +242,7 @@ namespace neon
 		float spin_;
 		float rotationSpeed_;
 		glm::vec3 pivot_;
+		bool isMoon_;
 
 		dynamic_array<vertex> vertices_;
 		shader_program program_;

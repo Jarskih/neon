@@ -959,7 +959,7 @@ namespace neon
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", glm::mat4(1));
-		program_.set_uniform_vec3("light_direction", glm::vec3(0, 1, 0));
+		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -977,7 +977,7 @@ namespace neon
 	}
 
 
-	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0)
+	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)
 	{
 	}
 
@@ -1094,21 +1094,32 @@ namespace neon
 
 		glm::mat4 transform = glm::mat4(1.0);
 
-		transform = glm::translate(transform, pivot_);
+		if (isMoon_) {
+			// Rotate around origin (sun)
+			transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::translate(transform, pivot_);
+			// Rotate around earth
+			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 1.0f, 0.0f));
+			transform = glm::translate(transform, position_);
+			// Rotate around self
+			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+		}
+		else {
+			// Rotate around origin (sun)
+			transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
 
-		// Rotate around origin (sun)
-	    transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+			// Translate to orbit
+			transform = glm::translate(transform, position_);
 
-		// Translate to orbit
-		transform = glm::translate(transform, position_);
-
-		// Rotate around self
-		transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+			// Rotate around self
+			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+		}
 
 		program_.bind();
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", transform);
+		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
