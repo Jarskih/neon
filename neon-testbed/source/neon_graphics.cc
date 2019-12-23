@@ -858,7 +858,7 @@ namespace neon
 				vertex_.texcoord_ = { u, v };
 
 				// normals
-				vertex_.normal_ = glm::vec3(0);
+				vertex_.normal_ = glm::vec3(0,1,0);
 
 				vertices.push_back(vertex_);
 			}
@@ -898,9 +898,9 @@ namespace neon
 			index_array.push_back(index);
 		}
 
-		for (int i = 0; i <= vertices.size(); i++) {
+		/*
+		for (int i = 0; i <= vertices.size()-3; i += 3) {
 			// add normal to vertex
-
 			vertex a = vertices[index_array[i]];
 			vertex b = vertices[index_array[i + 1]];
 			vertex c = vertices[index_array[i + 2]];
@@ -908,22 +908,19 @@ namespace neon
 			glm::vec3 BA = glm::vec3(b.position_ - a.position_);
 			glm::vec3 CA = glm::vec3(c.position_ - a.position_);
 
-			vertices[index_array[i]].normal_ += glm::cross(BA, CA);
+			vertices[index_array[i]].normal_ += glm::normalize(glm::cross(CA, BA));
 
 			glm::vec3 AB = glm::vec3(a.position_ - b.position_);
 			glm::vec3 CB = glm::vec3(c.position_ - b.position_);
 
-			vertices[index_array[i + 1]].normal_ += glm::cross(c.position_ - b.position_, a.position_ - b.position_);
+			vertices[index_array[i]].normal_ += glm::normalize(glm::cross(AB, CB));
 			
-			glm::vec3 AC = glm::vec3(a.position_ - b.position_);
-			glm::vec3 BC = glm::vec3(c.position_ - b.position_);
+			glm::vec3 AC = glm::vec3(a.position_ - c.position_);
+			glm::vec3 BC = glm::vec3(b.position_ - c.position_);
 			
-			vertices[index_array[i + 2]].normal_ += glm::cross(a.position_ - c.position_, b.position_ - c.position_);
+			vertices[index_array[i]].normal_ += glm::normalize(glm::cross(BC, AC));
 		}
-
-		for (auto vertex : vertices) {
-			vertex.normal_ = glm::normalize(vertex.normal_);
-		}
+		*/
 
 		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
 			return false;
@@ -969,7 +966,7 @@ namespace neon
 
 		// Culling
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
 
@@ -1089,6 +1086,7 @@ namespace neon
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", glm::mat4(1));
+		program_.set_uniform_vec3("light_direction", glm::vec3(0, 1, 0));
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -1098,9 +1096,9 @@ namespace neon
 
 		// Culling
 		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		glDisable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
-		glFrontFace(GL_CW);
+		glFrontFace(GL_CCW);
 
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
 	}

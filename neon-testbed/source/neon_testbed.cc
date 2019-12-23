@@ -191,9 +191,9 @@ namespace neon {
 		   return false;
 	   }
 
-	 // if (!sphere_.create("assets/sphere/earth.png", 1, 36, 36)) {
-	 //	   return false;
-	 //  }
+		if (!sphere_.create("assets/sphere/earth.jpg", 10, 36, 36)) {
+	 	   return false;
+	    }
 
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
 
@@ -212,11 +212,11 @@ namespace neon {
 	  controller_.update(dt);
 
 	  // rotation
-	  rotation_ += dt.as_seconds();
+	  //rotation_ += dt.as_seconds();
 
-	  glm::mat4 world = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
+	  // glm::mat4 world = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -5.0f));
 
-	  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
+	  //  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	  string text = "dt: " + std::to_string(dt.as_seconds());
 	  font_.render_text(2.0f, 2.0f, text);
@@ -227,9 +227,9 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	 // sphere_.render(camera_);
+	  sphere_.render(camera_);
 
-	 terrain_.render(camera_);
+	  terrain_.render(camera_);
 
 	  /*
 	  program_.bind();
