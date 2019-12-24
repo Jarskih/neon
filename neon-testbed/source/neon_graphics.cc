@@ -365,6 +365,39 @@ namespace neon
 		return error == GL_NO_ERROR;
 	}
 
+	bool texture::createColorTexture(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenTextures(1, &id_);
+		glBindTexture(GL_TEXTURE_2D, id_);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, id_, 0);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	bool texture::createDepthTexture(int width, int height) {
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenTextures(1, &id_);
+		glBindTexture(GL_TEXTURE_2D, id_);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT32, GL_FLOAT, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, id_, 0);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
 	bool texture::create_cubemap(int width, int height, const void** data)
 	{
 		if (is_valid()) {
@@ -551,6 +584,7 @@ namespace neon
 		view_(1.0f)
 	{
 	}
+
 	void fps_camera::update()
 	{
 		glm::vec3 x(1.0f, 0.0f, 0.0f);
@@ -800,8 +834,8 @@ namespace neon
 
 	void skybox::destroy()
 	{
-
 	}
+
 	void skybox::render(const fps_camera& camera)
 	{
 		glm::mat4 fixed_view = camera.view_;
@@ -842,7 +876,7 @@ namespace neon
 
 		// Get vertex height (y axis values)
 		dynamic_array<vertex> vertices;
-		float scale = 0.05f;
+		float scale = 0.1f;
 
 		for (int32 x = 0; x < height; x++) {
 			for (int32 y = 0; y < width; y++) {
@@ -858,7 +892,8 @@ namespace neon
 				vertex_.texcoord_ = { u, v };
 
 				// normals
-				{
+				if(x != 0 && y != 0 && x < width-1 && y < height-1) { // Ignore border pixels
+
 					glm::vec3 normal;
 
 					// +-- + -- +
@@ -869,12 +904,21 @@ namespace neon
 
 					// first triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x, rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x, rbga[2] * scale, y - 1 };
+						offSet = x * channels + (y - 1) * stride;
+						vertex_rbga = heightmap.data() + offSet;
+						v1.position_ = { x, vertex_rbga[2] * scale, y - 1 };
+
 						vertex v2;
-						v2.position_ = { x + 1, rbga[2] * scale, y };
+						offSet = (x + 1) * channels + y * stride;
+						vertex_rbga = heightmap.data() + offSet;
+						v2.position_ = { x + 1, vertex_rbga[2] * scale, y };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -884,12 +928,21 @@ namespace neon
 
 					// second triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x, rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x + 1, rbga[2] * scale, y };
+						offSet = (x + 1) * channels + y * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v1.position_ = { x + 1, vertex_rbga[2] * scale, y };
+
 						vertex v2;
-						v2.position_ = { x, rbga[2] * scale, y + 1 };
+						offSet = x * channels + (y+1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v2.position_ = { x, vertex_rbga[2] * scale, y + 1 };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -899,12 +952,21 @@ namespace neon
 
 					// third triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x, rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x + 1, rbga[2] * scale, y + 1 };
+						offSet = (x + 1) * channels + (y+1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v1.position_ = { x + 1, vertex_rbga[2] * scale, y + 1 };
+
 						vertex v2;
-						v2.position_ = { x, rbga[2] * scale, y + 1 };
+						offSet = x * channels + (y + 1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v2.position_ = { x, vertex_rbga[2] * scale, y + 1 };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -914,12 +976,21 @@ namespace neon
 
 					// fourth triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x, rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x, rbga[2] * scale, y + 1 };
+						offSet = x * channels + (y + 1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v1.position_ = { x, vertex_rbga[2] * scale, y + 1 };
+
 						vertex v2;
-						v2.position_ = { x - 1, rbga[2] * scale, y };
+						offSet = (x-1) * channels + y * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v2.position_ = { x - 1, vertex_rbga[2] * scale, y };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -929,12 +1000,21 @@ namespace neon
 
 					// fifth triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x, rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x - 1, rbga[2] * scale, y };
+						offSet = (x - 1) * channels + y * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v1.position_ = { x - 1, vertex_rbga[2] * scale, y };
+
 						vertex v2;
-						v2.position_ = { x - 1, rbga[2] * scale, y - 1 };
+						offSet = (x - 1) * channels + (y-1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v2.position_ = { x - 1, vertex_rbga[2] * scale, y - 1 };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -944,12 +1024,21 @@ namespace neon
 
 					// sixth triangle
 					{
+						uint32 offSet = 0;
+						uint8* vertex_rbga = nullptr;
+
 						vertex v0;
 						v0.position_ = { x , rbga[2] * scale, y };
+
 						vertex v1;
-						v1.position_ = { x - 1, rbga[2] * scale, y - 1 };
+						offSet = (x - 1) * channels + (y - 1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v1.position_ = { x - 1, vertex_rbga[2] * scale, y - 1 };
+
 						vertex v2;
-						v2.position_ = { x, rbga[2] * scale, y - 1 };
+						offSet = x * channels + (y - 1) * stride;
+						vertex_rbga = heightmap.data() + offset;
+						v2.position_ = { x, vertex_rbga[2] * scale, y - 1 };
 
 						const glm::vec3 side1 = v1.position_ - v0.position_;
 						const glm::vec3 side2 = v2.position_ - v1.position_;
@@ -1032,7 +1121,12 @@ namespace neon
 		program_.set_uniform_mat4("projection", camera.projection_);
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", glm::mat4(1));
-		program_.set_uniform_vec3("light_direction", glm::vec3(1, 0.5f, 1));
+		program_.set_uniform_vec3("light_direction", glm::vec3(0.5, 0.5f, 0));
+		program_.set_uniform_vec4("light_color", glm::vec4(1, 1, 0.5f, 1));
+
+		glm::mat4 conversionMatrix = glm::inverse(camera.view_);
+		glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
+		program_.set_uniform_vec3("camera_pos", cameraPos);
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -1042,15 +1136,15 @@ namespace neon
 
 		// Culling
 		glEnable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
 		glFrontFace(GL_CW);
 
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
 	}
 
 
-	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)
+	sphere::sphere() : position_(0), radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)
 	{
 	}
 
@@ -1175,7 +1269,7 @@ namespace neon
 			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::translate(transform, position_);
 			// Rotate around self
-			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+		    // transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 		else {
 			// Rotate around origin (sun)
@@ -1185,7 +1279,7 @@ namespace neon
 			transform = glm::translate(transform, position_);
 
 			// Rotate around self
-			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+			//transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 
 		program_.bind();
@@ -1193,6 +1287,12 @@ namespace neon
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", transform);
 		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
+		program_.set_uniform_vec3("light_pos", glm::vec3(0, 50, 0));
+		program_.set_uniform_vec4("light_color", glm::vec4(1,1,0.5f,1));
+
+		glm::mat4 conversionMatrix = glm::inverse(camera.view_);
+		glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
+		program_.set_uniform_vec3("camera_pos", cameraPos);
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -1207,6 +1307,91 @@ namespace neon
 		glFrontFace(GL_CW);
 
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
+	}
+
+	frame_buffer::frame_buffer() : id_(0)
+	{
+	}
+
+	bool frame_buffer::create(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		// create framebuffer
+		glGenFramebuffers(1, &id_);
+		glBindFramebuffer(GL_FRAMEBUFFER, id_);
+
+		// create texture attachment
+		depth_texture_.createDepthTexture(width, height);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	void frame_buffer::destroy()
+	{
+		glDeleteFramebuffers(1, &id_);
+		glDeleteTextures(1, &color_texture_.id_);
+		glDeleteTextures(1, &depth_texture_.id_);
+		//glDeleteRenderbuffers(1, &depth_buffer_.id_);
+	}
+
+	void frame_buffer::bind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture if there is any
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
+	}
+
+	void frame_buffer::unbind() const {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDrawBuffer(GL_NONE);
+	}
+
+	void frame_buffer::render(const fps_camera& camera)
+	{
+	}
+
+	bool frame_buffer::is_valid() const
+	{
+		return id_ != 0;
+	}
+
+	depth_buffer::depth_buffer() : id_(0)
+	{
+	}
+
+	bool depth_buffer::create(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenRenderbuffers(1, &id_);
+		glBindRenderbuffer(GL_RENDERBUFFER, id_);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id_);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	void depth_buffer::destroy()
+	{
+	}
+
+	void depth_buffer::bind() const
+	{
+	}
+
+	void depth_buffer::render(const fps_camera& camera)
+	{
+	}
+
+	bool depth_buffer::is_valid() const
+	{
+		return id_ != 0;
 	}
 
 } //!neon

@@ -163,6 +163,11 @@ namespace neon {
 		   return false;
 	   }
 
+	   // Create shadow frame buffer
+	  // if (!shadow_frame_buffer_.create(128, 128)) {
+	 //	   return false;
+	 //  }
+
 	   //Note: uniforms
 
 	   GLfloat aspect = 16.0f / 9.0f;
@@ -273,6 +278,13 @@ namespace neon {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	  skybox_.render(camera_);
+
+	  // render shadow map to frame buffer
+
+ 	  //shadow_frame_buffer_.bind();
+	  //shadow_frame_buffer_.unbind();
+
+	  // render normally
 
 	  terrain_.render(camera_);
 	  earth_.render(camera_, dt);

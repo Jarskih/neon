@@ -34,6 +34,7 @@ namespace neon
 	  vertex_format format_;
 	  texture texture_;
 	  sampler_state sampler_;
+	  frame_buffer shadow_frame_buffer_;
 
 	  float rotation_;
 	  bitmap_font font_;

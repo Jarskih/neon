@@ -98,6 +98,8 @@ namespace neon
 		texture();
 
 		bool create(const std::string& filename, bool flip = true);
+		bool createColorTexture(int width, int height);
+		bool createDepthTexture(int width, int height);
 		bool create_cubemap(int width, int height, const void **data);
 		void destroy();
 		
@@ -251,6 +253,40 @@ namespace neon
 		index_buffer index_buffer_;
 		texture texture_;
 		sampler_state sampler_;
+	};
+
+	struct depth_buffer {
+		depth_buffer();
+
+		bool create(int width, int height);
+
+		void destroy();
+		void bind() const;
+
+		void render(const fps_camera& camera);
+		bool is_valid() const;
+
+
+		GLuint id_;
+	};
+
+	struct frame_buffer {
+		frame_buffer();
+
+		bool create(int width, int height);
+
+		void destroy();
+		void bind() const;
+
+		void unbind() const;
+
+		void render(const fps_camera& camera);
+		bool is_valid() const;
+
+		GLuint id_;
+		texture color_texture_;
+		texture depth_texture_;
+		depth_buffer depth_buffer_;
 	};
 
 } //!neon
