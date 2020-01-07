@@ -107,8 +107,8 @@
     <Text Include="assets\vertex_shader.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\shadow\shadow_fragment_shader.shader" />
-    <None Include="assets\shadow\shadow_vertex_shader.shader" />
+    <None Include="assets\shadow\shadow_fragment.shader" />
+    <None Include="assets\shadow\shadow_vertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

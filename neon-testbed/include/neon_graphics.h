@@ -219,10 +219,10 @@ namespace neon
 		bool create(const string& heightmap_filemap, const string& texture_filename);
 		void destroy();
 
+		void render(const fps_camera& camera, const directional_light& light, shader_program& program);
 		void render(const fps_camera& camera, const directional_light& light);
 
 		shader_program program_;
-		shader_program shadowProgram_;
 		vertex_buffer vertex_buffer_;
 		vertex_format format_;
 		index_buffer index_buffer_;
@@ -273,11 +273,8 @@ namespace neon
 		bool create(int width, int height);
 
 		void destroy();
-		void bind() const;
 
-		void render(const fps_camera& camera);
 		bool is_valid() const;
-
 
 		GLuint id_;
 	};
@@ -292,10 +289,10 @@ namespace neon
 
 		void unbind() const;
 
-		void render(const fps_camera& camera);
 		bool is_valid() const;
 
 		GLuint id_;
+		
 		texture color_texture_;
 		texture depth_texture_;
 		depth_buffer depth_buffer_;

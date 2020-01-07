@@ -34,7 +34,9 @@ namespace neon
 	  vertex_format format_;
 	  texture texture_;
 	  sampler_state sampler_;
+
 	  frame_buffer shadow_frame_buffer_;
+	  shader_program shadowProgram_;
 
 	  float rotation_;
 	  bitmap_font font_;
@@ -43,6 +45,8 @@ namespace neon
 	  directional_light light_;
 	  fps_camera_controller controller_;
 	  skybox skybox_;
+
+	  glm::mat4 world_ = glm::mat4(1);
 
 	  terrain terrain_;
 	  terrain terrain2_;
