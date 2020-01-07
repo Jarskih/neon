@@ -195,7 +195,7 @@ namespace neon {
 	 	   return false;
 	    }
 
-		if (!model_.create_from_file("assets/model/Chest.FBX")) {
+		if (!model_.create_from_file("assets/model/Chest.FBX", "assets/model/vertex_shader.txt", "assets/model/fragment_shader.txt", "assets/model/diffuse.png")) {
 			return false;
 		}
 
@@ -234,9 +234,9 @@ namespace neon {
 
 	  skybox_.render(camera_);
 
-	  sphere_.render(camera_);
+	//  sphere_.render(camera_);
 
-	  terrain_.render(camera_);
+	//  terrain_.render(camera_);
 
 	  model_.render(camera_, model_matrix_);
 

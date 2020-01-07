@@ -23,12 +23,13 @@ namespace neon {
       struct vertex {
          glm::vec3 position_;
          glm::vec2 texcoord_;
+		 glm::vec3 normal_;
       };
 
       model();
 
       bool is_valid() const;
-      bool create_from_file(const string &filename);
+      bool create_from_file(const string &filename, const string& vertex, const string& fragment, const string& diffuse);
       void destroy();
 
       void render(const fps_camera &camera, const glm::mat4 &world);

@@ -33,13 +33,12 @@ namespace neon {
       return !meshes_.empty();
    }
 
-   bool model::create_from_file(const string &filename) {
-      if (!program_.create("assets/model/vertex_shader.txt", 
-                           "assets/model/fragment_shader.txt")) {
+   bool model::create_from_file(const string &filename, const string &vertex, const string &fragment, const string &diffuse) {
+      if (!program_.create(vertex, fragment)) {
          return false;
       }
 
-      if (!texture_.create("assets/model/diffuse.png")) {
+      if (!texture_.create(diffuse)) {
          return false;
       }
 
@@ -63,7 +62,7 @@ namespace neon {
          return false;
       }
 
-      if (!vertex_buffer_.create((int32)(sizeof(vertex) * vertices_.size()), vertices_.data())) {
+       if (!vertex_buffer_.create((int32)(sizeof(vertex) * vertices_.size()), vertices_.data())) {
          return false;
       }
       vertices_.clear();
@@ -132,10 +131,15 @@ namespace neon {
          if (ai_mesh->HasTextureCoords(0)) {
             texcoord = ai_mesh->mTextureCoords[0][index];
          }
+		 aiVector3D normal;
+		 if (ai_mesh->HasNormals) {
+			 normal = ai_mesh->mNormals[index];
+		 }
 
          vertex vert = {};
          vert.position_ = { position.x, position.y, position.z };
          vert.texcoord_ = { texcoord.x, texcoord.y };
+		 vert.normal_ = { normal.x, normal.y, normal.z };
          vertices_.push_back(vert);
       }
 
