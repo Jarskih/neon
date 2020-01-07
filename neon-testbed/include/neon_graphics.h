@@ -102,7 +102,7 @@ namespace neon
 		void destroy();
 		
 		bool is_valid() const;
-		void bind();
+		void bind(uint32 slot = 0);
 
 		GLuint id_;
 		GLenum type_;
@@ -115,7 +115,7 @@ namespace neon
 		void destroy();
 
 		bool is_valid();
-		void bind();
+		void bind(uint32 slot = 0);
 
 		GLuint id_;
 	};

@@ -399,8 +399,9 @@ namespace neon
 		return false;
 	}
 
-	void texture::bind()
+	void texture::bind(uint32 slot)
 	{
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(type_, id_); // bind 0 to clear bind
 	}
 
@@ -439,9 +440,9 @@ namespace neon
 		return false;
 	}
 
-	void sampler_state::bind()
+	void sampler_state::bind(uint32 slot)
 	{
-		glBindSampler(0, id_);
+		glBindSampler(slot, id_);
 	}
 
 	bitmap_font::bitmap_font() : projection_(1.0f) {

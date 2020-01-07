@@ -195,6 +195,10 @@ namespace neon {
 	 	   return false;
 	    }
 
+		if (!model_.create_from_file("assets/model/Chest.FBX")) {
+			return false;
+		}
+
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
 
       return true;
@@ -230,6 +234,8 @@ namespace neon {
 	  sphere_.render(camera_);
 
 	  terrain_.render(camera_);
+
+	  model_.render(camera_, glm::mat4(1));
 
 	  /*
 	  program_.bind();

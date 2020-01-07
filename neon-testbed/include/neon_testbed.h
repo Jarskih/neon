@@ -7,6 +7,7 @@
 #include <neon_opengl.h>
 
 #include "neon_graphics.h"
+#include <neon_model.h>
 
 // Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
@@ -43,6 +44,7 @@ namespace neon
 	  skybox skybox_;
 	  terrain terrain_;
 	  sphere sphere_;
+	  model model_;
    };
 } // !neon
 
