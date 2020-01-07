@@ -163,23 +163,31 @@ namespace neon {
 		   return false;
 	   }
 
+	   // Create light
+	   {
+		   float near_plane = 1.0f, far_plane = 7.5f;
+		   if (!light_.create(glm::vec4(1), glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane), glm::vec3(0,1,0))) {
+			   return false;
+		   }
+	   }
+
 	   // Create shadow frame buffer
-	  // if (!shadow_frame_buffer_.create(128, 128)) {
-	 //	   return false;
-	 //  }
+	   //if (!shadow_frame_buffer_.create(128, 128)) {
+	  //	   return false;
+	  // }
 
 	   //Note: uniforms
+	   {
+		   GLfloat aspect = 16.0f / 9.0f;
+		   glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.5f, 100.0f);
 
-	   GLfloat aspect = 16.0f / 9.0f;
-	   glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.5f, 100.0f);
+		   glm::mat4 world = glm::translate(glm::mat4(1.0f),
+			   glm::vec3(0.0f, 0.0f, -5.0f));
 
-	   glm::mat4 world = glm::translate(glm::mat4(1.0f), 
-										glm::vec3(0.0f, 0.0f, -5.0f));
-
-	   program_.bind();
-	   program_.set_uniform_mat4("projection", projection);
-	   program_.set_uniform_mat4("world", world);
-	
+		   program_.bind();
+		   program_.set_uniform_mat4("projection", projection);
+		   program_.set_uniform_mat4("world", world);
+	   }
 
 	   GLenum error = glGetError();
 	   if (error != GL_NO_ERROR)
@@ -199,6 +207,11 @@ namespace neon {
 	   if (!terrain_.create("assets/heightmap/heightmap.png", "assets/heightmap/texture.png")) {
 		   return false;
 	   }
+
+	   if (!terrain2_.create("assets/heightmap/heightmap.png", "assets/heightmap/texture.png")) {
+		   return false;
+	   }
+	   terrain2_.position_ = glm::vec3(0.0f, 50.0f, 0.0f);
 
 	   // Planets
 	   sun_.position_ = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -254,7 +267,7 @@ namespace neon {
 		   return false;
 	   }
 
-	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
+	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
 
       return true;
    }
@@ -281,12 +294,19 @@ namespace neon {
 
 	  // render shadow map to frame buffer
 
+	  terrain_.render(camera_, light_);
+
+	  terrain2_.render(camera_, light_);
+
  	  //shadow_frame_buffer_.bind();
+	  //shadow_frame_buffer_.render(camera_);
 	  //shadow_frame_buffer_.unbind();
 
 	  // render normally
 
-	  terrain_.render(camera_);
+
+	  /*
+	  terrain_.render(camera_, light_);
 	  earth_.render(camera_, dt);
 	  moon_.pivot_ = earth_.position_;
 	  moon_.render(camera_, dt);
@@ -298,6 +318,7 @@ namespace neon {
       uranus_.render(camera_, dt);
       venus_.render(camera_, dt);
 	  sun_.render(camera_, dt);
+	  */
 
 	  // Draw text
 	  font_.flush();

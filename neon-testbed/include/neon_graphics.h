@@ -145,6 +145,16 @@ namespace neon
 		glm::mat4 projection_;
 	};
 
+	struct directional_light {
+		directional_light();
+
+		bool create(glm::vec4 color, glm::mat4 projection, glm::vec3 direction);
+		glm::vec3 direction_;
+		glm::vec4 color_;
+		glm::mat4 projection_;
+		glm::mat4 view_;
+	};
+
 	struct fps_camera {
 		fps_camera();
 
@@ -209,15 +219,17 @@ namespace neon
 		bool create(const string& heightmap_filemap, const string& texture_filename);
 		void destroy();
 
-		void render(const fps_camera& camera);
+		void render(const fps_camera& camera, const directional_light& light);
 
 		shader_program program_;
+		shader_program shadowProgram_;
 		vertex_buffer vertex_buffer_;
 		vertex_format format_;
 		index_buffer index_buffer_;
 		texture texture_;
 		sampler_state sampler_;
 		int index_count_;
+		glm::vec3 position_;
 	};
 	
 	struct sphere {

@@ -572,6 +572,18 @@ namespace neon
 		vertices_.clear();
 	}
 
+	directional_light::directional_light() : color_(0), projection_(1), view_(1)
+	{
+	}
+
+	bool directional_light::create(glm::vec4 color, glm::mat4 projection, glm::vec3 direction) {
+		color_ = color;
+		projection_ = projection;
+		direction_ = direction;
+		view_ = glm::lookAt(-direction_, glm::vec3(0), glm::vec3(0, -1, 0));
+		return true;
+	}
+
 	fps_camera::fps_camera() : 
 		yaw_(0.0f), 
 		pitch_(0.0f), 
@@ -858,7 +870,7 @@ namespace neon
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	terrain::terrain() : index_count_(0)
+	terrain::terrain() : index_count_(0), position_(0)
 	{
 	}
 
@@ -1100,6 +1112,10 @@ namespace neon
 			return false;
 		}
 
+		if (!shadowProgram_.create("assets/shadow/shadow_vertex_shader.shader", "assets/shadow/shadow_fragment_shader.shader")) {
+			return false;
+		}
+
 		if (!sampler_.create(GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
 			return false;
 		}
@@ -1115,32 +1131,97 @@ namespace neon
 	{
 	}
 
-	void terrain::render(const fps_camera& camera)
+	void terrain::render(const fps_camera& camera, const directional_light& light)
 	{
-		program_.bind();
-		program_.set_uniform_mat4("projection", camera.projection_);
-		program_.set_uniform_mat4("view", camera.view_);
-		program_.set_uniform_mat4("world", glm::mat4(1));
-		program_.set_uniform_vec3("light_direction", glm::vec3(0.5, 0.5f, 0));
-		program_.set_uniform_vec4("light_color", glm::vec4(1, 1, 0.5f, 1));
+		glm::mat4 light_matrix = light.projection_ * light.view_ * glm::mat4(1);
 
-		glm::mat4 conversionMatrix = glm::inverse(camera.view_);
-		glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
-		program_.set_uniform_vec3("camera_pos", cameraPos);
+		unsigned int depthMapFBO;
+		glGenFramebuffers(1, &depthMapFBO);
 
-		vertex_buffer_.bind();
-		index_buffer_.bind();
-		format_.bind();
-		texture_.bind();
-		sampler_.bind();
+		const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
-		// Culling
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
+		unsigned int depthMap;
 
-		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
+		glm::mat4 transform = glm::mat4(1.0);
+		transform = glm::translate(transform, position_);
+
+		{
+
+			glGenTextures(1, &depthMap);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+				SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+			glDrawBuffer(GL_NONE);
+
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+	     	shadowProgram_.bind();
+			shadowProgram_.set_uniform_mat4("projection", light.projection_);
+			shadowProgram_.set_uniform_mat4("view", light.view_);
+			shadowProgram_.set_uniform_mat4("world", transform);
+			shadowProgram_.set_uniform_mat4("light_matrix", light_matrix);
+			shadowProgram_.set_uniform_vec3("light_direction", light.direction_);
+			shadowProgram_.set_uniform_vec4("light_color", light.color_);
+
+			vertex_buffer_.bind();
+			index_buffer_.bind();
+			format_.bind();
+			texture_.bind();
+			sampler_.bind();
+
+			glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
+
+			// Culling
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			glFrontFace(GL_CW);
+
+			index_buffer_.render(GL_TRIANGLES, 0, index_count_);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+
+
+		{
+
+			program_.bind();
+			program_.set_uniform_mat4("projection", camera.projection_);
+			program_.set_uniform_mat4("view", camera.view_);
+			program_.set_uniform_mat4("world", transform);
+			program_.set_uniform_mat4("light_matrix", light_matrix);
+			program_.set_uniform_vec3("light_direction", light.direction_);
+			program_.set_uniform_vec4("light_color", light.color_);
+			glBindTexture(GL_TEXTURE_2D, depthMap);
+
+			glm::mat4 conversionMatrix = glm::inverse(camera.view_);
+			glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
+			program_.set_uniform_vec3("camera_pos", cameraPos);
+
+			vertex_buffer_.bind();
+			index_buffer_.bind();
+			format_.bind();
+			texture_.bind();
+			sampler_.bind();
+
+			glViewport(0, 0, 1280, 720);
+
+			// Culling
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			glFrontFace(GL_CW);
+
+			index_buffer_.render(GL_TRIANGLES, 0, index_count_);
+		}
 	}
 
 
@@ -1393,5 +1474,4 @@ namespace neon
 	{
 		return id_ != 0;
 	}
-
 } //!neon

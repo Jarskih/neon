@@ -40,9 +40,12 @@ namespace neon
 	  bitmap_font font_;
 
 	  fps_camera camera_;
+	  directional_light light_;
 	  fps_camera_controller controller_;
 	  skybox skybox_;
+
 	  terrain terrain_;
+	  terrain terrain2_;
 	  sphere earth_;
 	  sphere moon_;
 	  sphere mars_;
