@@ -199,7 +199,10 @@ namespace neon {
 			return false;
 		}
 
-	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
+		model_matrix_ = glm::translate(glm::mat4(1), glm::vec3(0, 0, -20.0f));
+		model_matrix_ = glm::scale(model_matrix_, glm::vec3(0.1f));
+
+	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 100.0f);
 
       return true;
    }
@@ -235,7 +238,7 @@ namespace neon {
 
 	  terrain_.render(camera_);
 
-	  model_.render(camera_, glm::mat4(1));
+	  model_.render(camera_, model_matrix_);
 
 	  /*
 	  program_.bind();

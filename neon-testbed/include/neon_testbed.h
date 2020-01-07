@@ -44,6 +44,7 @@ namespace neon
 	  skybox skybox_;
 	  terrain terrain_;
 	  sphere sphere_;
+	  glm::mat4 model_matrix_;
 	  model model_;
    };
 } // !neon
