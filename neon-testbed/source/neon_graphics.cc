@@ -572,7 +572,7 @@ namespace neon
 		vertices_.clear();
 	}
 
-	directional_light::directional_light() : color_(0), projection_(1), view_(1), direction_(0)
+	directional_light::directional_light() : color_(0), projection_(1), view_(1), direction_(0), position_(0)
 	{
 	}
 
@@ -580,7 +580,8 @@ namespace neon
 		color_ = color;
 		projection_ = projection;
 		direction_ = direction;
-		view_ = glm::lookAt(-direction_, glm::vec3(0), glm::vec3(0, -1, 0));
+		position_ = { 0, 50, 0 };
+		view_ = glm::lookAt(position_, glm::vec3(0), glm::vec3(0, 1, 0));
 		return true;
 	}
 
@@ -731,7 +732,6 @@ namespace neon
 
 	skybox::skybox()
 	{
-
 	}
 
 	bool skybox::create()
@@ -870,357 +870,19 @@ namespace neon
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	terrain::terrain() : index_count_(0), position_(0)
-	{
-	}
-
-	bool terrain::create(const string& heightmap_filemap, const string& texture_filename)
-	{
-		image heightmap;
-		if (!heightmap.create_from_file(heightmap_filemap.c_str())) {
-			return false;
-		}
-
-		const int32 width = heightmap.width();
-		const int32 height = heightmap.height();
-		const int32 channels = 4; // note: 4 channels per pixel
-		const int32 stride = height* channels; 
-
-		// Get vertex height (y axis values)
-		dynamic_array<vertex> vertices;
-		float scale = 0.1f;
-
-		for (int32 x = 0; x < height; x++) {
-			for (int32 y = 0; y < width; y++) {
-				const uint32 offset = x * channels + y * stride;
-				const uint8 *rbga = heightmap.data() + offset;
- 
-				vertex vertex_;
-				vertex_.position_ = { x, rbga[2] * scale, y };
-
-				// calculate uv in range of 0-1
-				float u = (float)x / width;
-				float v = (float)y / height;
-				vertex_.texcoord_ = { u, v };
-
-				// normals
-				if(x != 0 && y != 0 && x < width-1 && y < height-1) { // Ignore border pixels
-
-					glm::vec3 normal;
-
-					// +-- + -- +
-					// | \ | \ |
-					// +-- + -- +
-					// | \ | \ |
-					// +-- + -- +
-
-					// first triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x, rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = x * channels + (y - 1) * stride;
-						vertex_rbga = heightmap.data() + offSet;
-						v1.position_ = { x, vertex_rbga[2] * scale, y - 1 };
-
-						vertex v2;
-						offSet = (x + 1) * channels + y * stride;
-						vertex_rbga = heightmap.data() + offSet;
-						v2.position_ = { x + 1, vertex_rbga[2] * scale, y };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					// second triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x, rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = (x + 1) * channels + y * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v1.position_ = { x + 1, vertex_rbga[2] * scale, y };
-
-						vertex v2;
-						offSet = x * channels + (y+1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v2.position_ = { x, vertex_rbga[2] * scale, y + 1 };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					// third triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x, rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = (x + 1) * channels + (y+1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v1.position_ = { x + 1, vertex_rbga[2] * scale, y + 1 };
-
-						vertex v2;
-						offSet = x * channels + (y + 1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v2.position_ = { x, vertex_rbga[2] * scale, y + 1 };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					// fourth triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x, rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = x * channels + (y + 1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v1.position_ = { x, vertex_rbga[2] * scale, y + 1 };
-
-						vertex v2;
-						offSet = (x-1) * channels + y * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v2.position_ = { x - 1, vertex_rbga[2] * scale, y };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					// fifth triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x, rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = (x - 1) * channels + y * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v1.position_ = { x - 1, vertex_rbga[2] * scale, y };
-
-						vertex v2;
-						offSet = (x - 1) * channels + (y-1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v2.position_ = { x - 1, vertex_rbga[2] * scale, y - 1 };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					// sixth triangle
-					{
-						uint32 offSet = 0;
-						uint8* vertex_rbga = nullptr;
-
-						vertex v0;
-						v0.position_ = { x , rbga[2] * scale, y };
-
-						vertex v1;
-						offSet = (x - 1) * channels + (y - 1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v1.position_ = { x - 1, vertex_rbga[2] * scale, y - 1 };
-
-						vertex v2;
-						offSet = x * channels + (y - 1) * stride;
-						vertex_rbga = heightmap.data() + offset;
-						v2.position_ = { x, vertex_rbga[2] * scale, y - 1 };
-
-						const glm::vec3 side1 = v1.position_ - v0.position_;
-						const glm::vec3 side2 = v2.position_ - v1.position_;
-						const glm::vec3 cross = glm::cross(side1, side2);
-						normal += cross;
-					}
-
-					vertex_.normal_ = glm::normalize(normal);
-				}
-
-				vertices.push_back(vertex_);
-			}
-		}
-
-		if (!vertex_buffer_.create(sizeof(vertex) * (int)vertices.size(), vertices.data())) {
-			return false;
-		}
-		
-		dynamic_array<uint32> index_array;
-		int x = 0; // pic width
-		int y = 0; // pic height
-		uint32 offset = 1;
-		for (uint32 index = 0; index < (uint32)width * (uint32)height; index ++) {
-
-			if (x >= width-1) {
-				x = 0;
-				y++;
-				continue;
-			}
-
-			x++;
-
-			if (y >= height-1) {
-				break;
-			}
-
-			// First triangle
-	
-			index_array.push_back(index);
-			index_array.push_back(index + offset);
-			index_array.push_back(index + offset + width);
-
-			// Second triangle
-			index_array.push_back(index + offset + width);
-			index_array.push_back(index + width);
-			index_array.push_back(index);
-		}
-
-		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
-			return false;
-		}
-
-		index_count_ = (int)index_array.size();
-		format_.add_attribute(0, 3, GL_FLOAT, false);
-		format_.add_attribute(1, 2, GL_FLOAT, false);
-		format_.add_attribute(2, 3, GL_FLOAT, false);
-
-		if (!program_.create("assets/heightmap/vertex_shader.shader", "assets/heightmap/fragment_shader.shader")) {
-			return false;
-		}
-
-		if (!sampler_.create(GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
-			return false;
-		}
-
-		if (!texture_.create(texture_filename, false)) {
-			return false;
-		}
-	
-		return true;
-	}
-
-	void terrain::destroy()
-	{
-	}
-
-	void terrain::render(const fps_camera& camera, const directional_light& light, shader_program &program) {
-
-		glm::mat4 light_matrix = light.projection_ * light.view_ * glm::mat4(1);
-
-		unsigned int depthMapFBO;
-		glGenFramebuffers(1, &depthMapFBO);
-
-		const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-
-		unsigned int depthMap;
-
-		glm::mat4 transform = glm::mat4(1.0);
-		transform = glm::translate(transform, glm::vec3(0));
-
-		glGenTextures(1, &depthMap);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-		glDrawBuffer(GL_NONE);
-
-		program.bind();
-		program.set_uniform_mat4("projection", light.projection_);
-		program.set_uniform_mat4("view", light.view_);
-		program.set_uniform_mat4("world", glm::mat4(1));
-		program.set_uniform_vec3("light_direction", light.direction_);
-
-		vertex_buffer_.bind();
-		index_buffer_.bind();
-		format_.bind();
-		texture_.bind();
-		sampler_.bind();
-
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
-
-		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-	}
-
-	void terrain::render(const fps_camera& camera, const directional_light& light)
-	{
-		glm::mat4 light_matrix = light.projection_ * light.view_ * glm::mat4(1);
-
-		glm::mat4 transform = glm::mat4(1.0);
-		transform = glm::translate(transform, position_);
-
-		program_.bind();
-		program_.set_uniform_mat4("projection", camera.projection_);
-		program_.set_uniform_mat4("view", camera.view_);
-		program_.set_uniform_mat4("world", transform);
-		program_.set_uniform_mat4("light_matrix", light_matrix);
-		program_.set_uniform_vec3("light_direction", light.direction_);
-		program_.set_uniform_vec4("light_color", light.color_);
-
-		glm::mat4 conversionMatrix = glm::inverse(camera.view_);
-		glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
-		program_.set_uniform_vec3("camera_pos", cameraPos);
-
-		vertex_buffer_.bind();
-		index_buffer_.bind();
-		format_.bind();
-		texture_.bind();
-		sampler_.bind();
-
-		// Culling
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
-
-		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
-	}
-
-
 	sphere::sphere() : position_(0), radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)
 	{
 	}
 
-	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors) {
+	constexpr float PI = 3.14159265359f;
+
+	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors, float orbit) {
 		
 		radius_ = radius;
 		stacks_ = stacks;
 		sectors_ = sectors;
-		constexpr float PI = 3.14159265359f;
+		orbit_ = orbit;
+		rotationSpeed_ = 10.0f;
 
 		vertices_.clear();
 
@@ -1323,7 +985,8 @@ namespace neon
 	void sphere::render(neon::fps_camera camera, const time& dt)
 	{
 		// rotation
-		rotation_ += dt.as_seconds() * rotationSpeed_;
+		float angle = 2 * PI / orbit_;
+		rotation_ += dt.as_seconds() * angle * rotationSpeed_;
 		spin_ += dt.as_seconds();
 
 		glm::mat4 transform = glm::mat4(1.0);

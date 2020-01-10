@@ -31,7 +31,6 @@ uniform mat4 world;
 uniform mat4 projection;
 uniform vec3 camera_pos;
 uniform mat4 light_matrix;
-//uniform vec3 light_pos;
 
 out vec2 f_texcoord;
 out vec3 f_normal;
@@ -51,6 +50,5 @@ void main()
 	vec3 transformed_normal = mat3(world) * normal;
 	f_normal = normalize(transformed_normal);
 
-	f_shadow = light_matrix * vec4(f_position, 1);
-	//f_light_pos = light_pos * mat3(world);
+	f_shadow = light_matrix * vec4(f_position, 0);
 }

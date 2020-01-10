@@ -153,6 +153,7 @@ namespace neon
 		glm::vec4 color_;
 		glm::mat4 projection_;
 		glm::mat4 view_;
+		glm::vec3 position_;
 	};
 
 	struct fps_camera {
@@ -206,31 +207,6 @@ namespace neon
 		texture cubemap_;
 	};
 
-	struct terrain {
-
-		struct vertex {
-			glm::vec3 position_;
-			glm::vec2 texcoord_;
-			glm::vec3 normal_;
-		};
-
-		terrain();
-
-		bool create(const string& heightmap_filemap, const string& texture_filename);
-		void destroy();
-
-		void render(const fps_camera& camera, const directional_light& light, shader_program& program);
-		void render(const fps_camera& camera, const directional_light& light);
-
-		shader_program program_;
-		vertex_buffer vertex_buffer_;
-		vertex_format format_;
-		index_buffer index_buffer_;
-		texture texture_;
-		sampler_state sampler_;
-		int index_count_;
-		glm::vec3 position_;
-	};
 	
 	struct sphere {
 
@@ -242,7 +218,7 @@ namespace neon
 
 		sphere();
 
-		bool create(std::string texture_filename, float radius, int stacks, int sectors);
+		bool create(std::string texture_filename, float radius, int stacks, int sectors, float orbit);
 		void render(fps_camera camera, const time& dt);
 
 		glm::vec3 position_;
@@ -257,6 +233,7 @@ namespace neon
 		float rotationSpeed_;
 		glm::vec3 pivot_;
 		bool isMoon_;
+		float orbit_;
 
 		dynamic_array<vertex> vertices_;
 		shader_program program_;

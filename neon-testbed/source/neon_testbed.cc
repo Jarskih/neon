@@ -166,7 +166,7 @@ namespace neon {
 	   // Create light
 	   {
 		   float near_plane = 1.0f, far_plane = 7.5f;
-		   if (!light_.create(glm::vec4(1), glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane), glm::vec3(0,1,0))) {
+		   if (!light_.create(glm::vec4(1), glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane), glm::vec3(0,1,0))) {
 			   return false;
 		   }
 	   }
@@ -206,67 +206,72 @@ namespace neon {
 	   // Planets
 	   sun_.position_ = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36)) {
+	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36, 0.01f)) {
 		   return false;
 	   }
 
 	   mercury_.position_ = glm::vec3(58.0f, 0.0f, 0.0f);
-	   if (!mercury_.create("assets/sphere/2k_mercury.jpg", 2.440f, 36, 36)) {
+	   if (!mercury_.create("assets/sphere/2k_mercury.jpg", 2.440f, 36, 36, 180)) {
 		   return false;
 	   }
 
 	   venus_.position_ = glm::vec3(108.0f, 0.0f, 0.0f);
-	   if (!venus_.create("assets/sphere/2k_venus_atmosphere.jpg", 6.052f, 36, 36)) {
+	   if (!venus_.create("assets/sphere/2k_venus_atmosphere.jpg", 6.052f, 36, 36, 240)) {
 		   return false;
 	   }
 
 	   earth_.position_ = glm::vec3(150.0f, 0.0f, 0.0f);
-	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36)) {
+	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36, 365)) {
 	 	   return false;
 	   }
 
 	   moon_.position_ = glm::vec3(15.0f, 0.0f, 0.0f); // Relative to parent (earth)
 	   moon_.pivot_ = earth_.position_;
 	   moon_.isMoon_ = true;
-	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36)) {
+	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36, 365)) {
 		   return false;
 	   }
 
 	   mars_.position_ = glm::vec3(227.0f, 0.0f, 0.0f);
-	   if (!mars_.create("assets/sphere/2k_mars.jpg", 3.397f, 36, 36)) {
+	   if (!mars_.create("assets/sphere/2k_mars.jpg", 3.397f, 36, 36, 400)) {
 		   return false;
 	   }
 
-	   jupiter_.position_ = glm::vec3(778.0f, 0.0f, 0.0f);
-	   if (!jupiter_.create("assets/sphere/2k_jupiter.jpg", 71.492f, 36, 36)) {
+	   jupiter_.position_ = glm::vec3(300.0f, 0.0f, 0.0f);
+	   if (!jupiter_.create("assets/sphere/2k_jupiter.jpg", 71.492f, 36, 36, 500)) {
 		   return false;
 	   }
 
-	   saturn_.position_ = glm::vec3(1434.0f, 0.0f, 0.0f);
-	   if (!saturn_.create("assets/sphere/2k_saturn.jpg", 60.268f, 36, 36)) {
+	   saturn_.position_ = glm::vec3(434.0f, 0.0f, 0.0f);
+	   if (!saturn_.create("assets/sphere/2k_saturn.jpg", 60.268f, 36, 36, 600)) {
 		   return false;
 	   }
 
-	   uranus_.position_ = glm::vec3(2871.0f, 0.0f, 0.0f);
-	   if (!uranus_.create("assets/sphere/2k_uranus.jpg", 25.559f, 36, 36)) {
+	   uranus_.position_ = glm::vec3(571.0f, 0.0f, 0.0f);
+	   if (!uranus_.create("assets/sphere/2k_uranus.jpg", 25.559f, 36, 36, 700)) {
 		   return false;
 	   }
 
-	   neptune_.position_ = glm::vec3(4496.0f, 0.0f, 0.0f);
-	   if (!neptune_.create("assets/sphere/2k_neptune.jpg", 24.766f, 36, 36)) {
+	   neptune_.position_ = glm::vec3(600, 0.0f, 0.0f);
+	   if (!neptune_.create("assets/sphere/2k_neptune.jpg", 24.766f, 36, 36, 800)) {
 		   return false;
 	   }
 
-	   // Create shadow frame buffer
-	   if (!shadow_frame_buffer_.create(128, 128)) {
+	   if (!model_.create_from_file("assets/model/Chest.FBX", "assets/model/vertex_shader.txt", "assets/model/fragment_shader.txt", "assets/model/diffuse.png")) {
 		   return false;
 	   }
 
-	   if (!shadowProgram_.create("assets/shadow/shadow_vertex.shader", "assets/shadow/shadow_fragment.shader")) {
+	   model_matrix_ = glm::translate(glm::mat4(1), glm::vec3(50.0f, 30.0f, 50.0f));
+	   model_matrix_ = glm::scale(model_matrix_, glm::vec3(0.2f));
+
+	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
+	   camera_.position_ = { 0, 0, 1000 };
+
+	   framebuffer_format formats[] = { FRAMEBUFFER_FORMAT_RGBA8 };
+
+	   if (!framebuffer_.create(240, 132, _countof(formats), formats, FRAMEBUFFER_FORMAT_D32)) {
 		   return false;
 	   }
-
-	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 1000.0f);
 
       return true;
    }
@@ -279,32 +284,63 @@ namespace neon {
          return false;
       }
 
+	  if (keyboard_.is_down(KEYCODE_Z)) {
+		  light_.position_ = glm::vec3(light_.position_.x + dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_X)) {
+		  light_.position_ = glm::vec3(light_.position_.x - dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_C)) {
+		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y + dt.as_seconds() * 10.0f, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_V)) {
+		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y - dt.as_seconds() * 10.0f, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+
 	  // Update camera
 	  controller_.update(dt);
 
 	  // first pass
-	  shadow_frame_buffer_.bind();
-	  glClearColor(0.0, 0.0, 0.0, 0.0);
-	  glClearDepth(1.0f);
+	  framebuffer_.bind();
+	  // clear
+	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	  glEnable(GL_DEPTH_TEST);
-	  
-	  skybox_.render(camera_);
-	  terrain_.render(camera_, light_, shadowProgram_);
 
-	// second pass
-	  shadow_frame_buffer_.unbind();
+	  terrain_.render_shadow_map(light_);
+	  model_.render_shadow_map(light_);
+
+	  framebuffer::unbind(1280, 720);
+
+	  // second pass
+	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	  glDisable(GL_DEPTH_TEST);
 
-	  string text = "dt: " + std::to_string(dt.as_milliseconds()) + " (FPS:" + std::to_string(1.0f / dt.as_milliseconds() / 1000) + ")";
+	  string text = "dt: " + std::to_string(dt.as_seconds());
 	  font_.render_text(2.0f, 2.0f, text);
 
+	  framebuffer_.bind_as_depth(1);
+
 	  skybox_.render(camera_);
 	  terrain_.render(camera_, light_);
+	  model_.render(camera_, model_matrix_);
+
+	 // framebuffer_.blit(0, 0, 1280, 720);
+
 
 	  /*
-	  terrain_.render(camera_, light_);
+		correct rotation
+	    float angle = 20.0f * i;
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+	  */
+
 	  earth_.render(camera_, dt);
 	  moon_.pivot_ = earth_.position_;
 	  moon_.render(camera_, dt);
@@ -316,7 +352,6 @@ namespace neon {
       uranus_.render(camera_, dt);
       venus_.render(camera_, dt);
 	  sun_.render(camera_, dt);
-	  */
 
 	  // Draw text
 	  font_.flush();

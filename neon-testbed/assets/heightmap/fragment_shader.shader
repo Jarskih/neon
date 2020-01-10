@@ -64,7 +64,7 @@ void main()
 	vec4 tex_color = texture(diffuse, f_texcoord);
 
 	// Ambient light
-	vec3 ambient = 0.15f * tex_color.rgb;
+	vec3 ambient = 0.1f * tex_color.rgb;
 
 	// Diffuse light
 	float NdL = clamp(dot(N, -L), 0, 1);

@@ -7,6 +7,9 @@
 #include <neon_opengl.h>
 
 #include "neon_graphics.h"
+#include "neon_framebuffer.h"
+#include "neon_model.h"
+#include "neon_terrain.h"
 
 // Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
@@ -35,9 +38,6 @@ namespace neon
 	  texture texture_;
 	  sampler_state sampler_;
 
-	  frame_buffer shadow_frame_buffer_;
-	  shader_program shadowProgram_;
-
 	  float rotation_;
 	  bitmap_font font_;
 
@@ -46,10 +46,13 @@ namespace neon
 	  fps_camera_controller controller_;
 	  skybox skybox_;
 
+	  framebuffer framebuffer_;
 	  glm::mat4 world_ = glm::mat4(1);
 
+	  model model_;
+	  glm::mat4 model_matrix_;
+
 	  terrain terrain_;
-	  terrain terrain2_;
 	  sphere earth_;
 	  sphere moon_;
 	  sphere mars_;
