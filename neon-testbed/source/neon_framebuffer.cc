@@ -197,6 +197,17 @@ namespace neon {
       glViewport(0, 0, width_, height_);
    }
 
+   void framebuffer::bind_as_texture(uint32 index, uint32 slot)
+   {
+	   glActiveTexture(GL_TEXTURE_2D + slot);
+	   glBindTexture(GL_TEXTURE_2D, color_attachments_[index]);
+   }
+
+   void framebuffer::bind_as_depth(uint32 slot) {
+	   glActiveTexture(GL_TEXTURE_2D + slot);
+	   glBindTexture(GL_TEXTURE_2D, depth_attachment_);
+   }
+
    void framebuffer::blit(int32 x, int32 y, int32 width, int32 height) {
       glBindFramebuffer(GL_READ_FRAMEBUFFER, id_);
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

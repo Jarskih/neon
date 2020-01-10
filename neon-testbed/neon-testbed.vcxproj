@@ -91,6 +91,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\neon_framebuffer.cc" />
     <ClCompile Include="source\neon_graphics.cc" />
     <ClCompile Include="source\neon_model.cc" />
     <ClCompile Include="source\neon_testbed.cc" />
@@ -174,6 +175,7 @@
     <ClInclude Include="external\assimp\include\assimp\XMLTools.h" />
     <ClInclude Include="external\assimp\include\assimp\ZipArchiveIOSystem.h" />
     <ClInclude Include="external\stb_image\stb_image.h" />
+    <ClInclude Include="include\neon_framebuffer.h" />
     <ClInclude Include="include\neon_graphics.h" />
     <ClInclude Include="include\neon_model.h" />
     <ClInclude Include="include\neon_testbed.h" />

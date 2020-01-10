@@ -8,6 +8,7 @@
 
 #include "neon_graphics.h"
 #include <neon_model.h>
+#include <neon_framebuffer.h>
 
 // Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
@@ -46,6 +47,7 @@ namespace neon
 	  sphere sphere_;
 	  glm::mat4 model_matrix_;
 	  model model_;
+	  framebuffer framebuffer_;
    };
 } // !neon
 

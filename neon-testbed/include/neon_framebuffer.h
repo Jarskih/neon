@@ -30,6 +30,8 @@ namespace neon {
       void destroy();
 
       void bind();
+	  void bind_as_texture(uint32 index, uint32 slot = 0);
+	  void bind_as_depth(uint32 slot);
       void blit(int32 x, int32 y, int32 width, int32 height);
 
       int32 width_;

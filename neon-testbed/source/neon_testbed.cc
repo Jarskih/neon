@@ -204,6 +204,12 @@ namespace neon {
 
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 100.0f);
 
+	   framebuffer_format formats[] = { FRAMEBUFFER_FORMAT_RGBA8 };
+
+	   if (!framebuffer_.create(240, 132, _countof(formats), formats, FRAMEBUFFER_FORMAT_D32)) {
+		   return false;
+	   }
+
       return true;
    }
 
@@ -225,20 +231,29 @@ namespace neon {
 
 	  //  world = glm::rotate(world, rotation_, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	  string text = "dt: " + std::to_string(dt.as_seconds());
-	  font_.render_text(2.0f, 2.0f, text);
+	  framebuffer_.bind();
+	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	  // clear
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	  string text = "dt: " + std::to_string(dt.as_seconds());
+	  font_.render_text(2.0f, 2.0f, text);
+
 	  skybox_.render(camera_);
+	  model_.render(camera_, model_matrix_);
+
+	  framebuffer::unbind(1280, 720);
+
+	  framebuffer_.blit(0, 0, 1280, 720);
 
 	//  sphere_.render(camera_);
 
 	//  terrain_.render(camera_);
 
-	  model_.render(camera_, model_matrix_);
+	 // model_.render(camera_, model_matrix_);
 
 	  /*
 	  program_.bind();

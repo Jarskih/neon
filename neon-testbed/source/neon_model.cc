@@ -132,14 +132,14 @@ namespace neon {
             texcoord = ai_mesh->mTextureCoords[0][index];
          }
 		 aiVector3D normal;
-		 if (ai_mesh->HasNormals) {
-			 normal = ai_mesh->mNormals[index];
-		 }
+		// if (ai_mesh->HasNormals) {
+		//	 normal = ai_mesh->mNormals[index];
+		// }
 
          vertex vert = {};
          vert.position_ = { position.x, position.y, position.z };
          vert.texcoord_ = { texcoord.x, texcoord.y };
-		 vert.normal_ = { normal.x, normal.y, normal.z };
+		// vert.normal_ = { normal.x, normal.y, normal.z };
          vertices_.push_back(vert);
       }
 

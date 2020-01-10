@@ -23,7 +23,7 @@ namespace neon {
       struct vertex {
          glm::vec3 position_;
          glm::vec2 texcoord_;
-		 glm::vec3 normal_;
+		// glm::vec3 normal_;
       };
 
       model();
