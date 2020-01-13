@@ -98,6 +98,8 @@ namespace neon
 		texture();
 
 		bool create(const std::string& filename, bool flip = true);
+		bool createColorTexture(int width, int height);
+		bool createDepthTexture(int width, int height);
 		bool create_cubemap(int width, int height, const void **data);
 		void destroy();
 		
@@ -128,7 +130,7 @@ namespace neon
 
 		bitmap_font();
 
-		bool create();
+		bool create(const string vertex, const string fragment, const string font);
 		void destroy();
 
 		void render_text(const float p_x, const float p_y, const string& text);
@@ -141,6 +143,17 @@ namespace neon
 		sampler_state sampler_;
 		dynamic_array<vertex> vertices_;
 		glm::mat4 projection_;
+	};
+
+	struct directional_light {
+		directional_light();
+
+		bool create(glm::vec4 color, glm::vec3 direction);
+		glm::vec3 direction_;
+		glm::vec4 color_;
+		glm::mat4 projection_;
+		glm::mat4 view_;
+		glm::vec3 position_;
 	};
 
 	struct fps_camera {
@@ -193,30 +206,6 @@ namespace neon
 		sampler_state sampler_;
 		texture cubemap_;
 	};
-
-	struct terrain {
-
-		struct vertex {
-			glm::vec3 position_;
-			glm::vec2 texcoord_;
-			glm::vec3 normal_;
-		};
-
-		terrain();
-
-		bool create(const string& heightmap_filemap, const string& texture_filename);
-		void destroy();
-
-		void render(const fps_camera& camera);
-
-		shader_program program_;
-		vertex_buffer vertex_buffer_;
-		vertex_format format_;
-		index_buffer index_buffer_;
-		texture texture_;
-		sampler_state sampler_;
-		int index_count_;
-	};
 	
 	struct sphere {
 
@@ -228,10 +217,17 @@ namespace neon
 
 		sphere();
 
-		bool create(std::string texture_filename, float radius, int stacks, int sectors);
+		bool create(std::string texture_filename, float radius, int stacks, int sectors, float orbit);
 		void render(fps_camera camera, const time& dt);
+		void set_parent(glm::vec3 position);
 
 		glm::vec3 position_;
+		glm::vec3 parent_position_;
+		bool has_parent;
+
+		float orbit_;
+		float rotation_speed_;
+
 		float radius_;
 		int stacks_;
 		int sectors_;
@@ -240,9 +236,6 @@ namespace neon
 		int index_count_;
 		float rotation_;
 		float spin_;
-		float rotationSpeed_;
-		glm::vec3 pivot_;
-		bool isMoon_;
 
 		dynamic_array<vertex> vertices_;
 		shader_program program_;
@@ -251,6 +244,37 @@ namespace neon
 		index_buffer index_buffer_;
 		texture texture_;
 		sampler_state sampler_;
+	};
+
+	struct depth_buffer {
+		depth_buffer();
+
+		bool create(int width, int height);
+
+		void destroy();
+
+		bool is_valid() const;
+
+		GLuint id_;
+	};
+
+	struct frame_buffer {
+		frame_buffer();
+
+		bool create(int width, int height);
+
+		void destroy();
+		void bind() const;
+
+		void unbind() const;
+
+		bool is_valid() const;
+
+		GLuint id_;
+		
+		texture color_texture_;
+		texture depth_texture_;
+		depth_buffer depth_buffer_;
 	};
 
 } //!neon

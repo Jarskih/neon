@@ -1,7 +1,6 @@
 //neon_graphics.cc
 
 #include "neon_graphics.h"
-#include <cassert>
 
 // #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -365,6 +364,39 @@ namespace neon
 		return error == GL_NO_ERROR;
 	}
 
+	bool texture::createColorTexture(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenTextures(1, &id_);
+		glBindTexture(GL_TEXTURE_2D, id_);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, id_, 0);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	bool texture::createDepthTexture(int width, int height) {
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenTextures(1, &id_);
+		glBindTexture(GL_TEXTURE_2D, id_);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT32, GL_FLOAT, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, id_, 0);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
 	bool texture::create_cubemap(int width, int height, const void** data)
 	{
 		if (is_valid()) {
@@ -448,9 +480,9 @@ namespace neon
 
 	}
 
-	bool bitmap_font::create()
+	bool bitmap_font::create(const string vertex, const string fragment, const string font)
 	{
-		if (!program_.create("assets/bitmap_font_vertex_shader.shader", "assets/bitmap_font_fragment_shader.shader")) {
+		if (!program_.create(vertex, fragment)) {
 			return false;
 		}
 
@@ -461,7 +493,7 @@ namespace neon
 			return false;
 		}
 
-		if (!texture_.create("assets/font_8x8.png", false)) {
+		if (!texture_.create(font, false)) {
 			return false;
 		}
 
@@ -539,6 +571,20 @@ namespace neon
 		vertices_.clear();
 	}
 
+	directional_light::directional_light() : color_(0), projection_(1), view_(1), direction_(0), position_(0)
+	{
+	}
+
+	bool directional_light::create(glm::vec4 color, glm::vec3 direction) {
+		projection_ = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
+		color_ = color;
+		direction_ = direction;
+		// TODO remove position
+		position_ = { 0, 50, 0 };
+		view_ = glm::lookAt(position_, glm::vec3(0), glm::vec3(0, 1, 0));
+		return true;
+	}
+
 	fps_camera::fps_camera() : 
 		yaw_(0.0f), 
 		pitch_(0.0f), 
@@ -551,6 +597,7 @@ namespace neon
 		view_(1.0f)
 	{
 	}
+
 	void fps_camera::update()
 	{
 		glm::vec3 x(1.0f, 0.0f, 0.0f);
@@ -629,7 +676,7 @@ namespace neon
 
 	void fps_camera_controller::update(const time& deltatime)
 	{
-		constexpr float camera_speed = 50.0f;
+		constexpr float camera_speed = 100.0f;
 		constexpr float camera_turn_speed = 5.0f;
 		const float amount = camera_speed * deltatime.as_seconds();
 
@@ -685,7 +732,6 @@ namespace neon
 
 	skybox::skybox()
 	{
-
 	}
 
 	bool skybox::create()
@@ -800,8 +846,8 @@ namespace neon
 
 	void skybox::destroy()
 	{
-
 	}
+
 	void skybox::render(const fps_camera& camera)
 	{
 		glm::mat4 fixed_view = camera.view_;
@@ -824,169 +870,19 @@ namespace neon
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	terrain::terrain() : index_count_(0)
+	sphere::sphere() : position_(0), parent_position_(0), has_parent(false), orbit_(0), rotation_speed_(0), radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0)
 	{
 	}
 
-	bool terrain::create(const string& heightmap_filemap, const string& texture_filename)
-	{
-		image heightmap;
-		if (!heightmap.create_from_file(heightmap_filemap.c_str())) {
-			return false;
-		}
+	constexpr float PI = 3.14159265359f;
 
-		const int32 width = heightmap.width();
-		const int32 height = heightmap.height();
-		const int32 channels = 4; // note: 4 channels per pixel
-		const int32 stride = height* channels; 
-
-		// Get vertex height (y axis values)
-		dynamic_array<vertex> vertices;
-		float scale = 0.05f;
-
-		for (int32 h = 0; h < height; h++) {
-			for (int32 w = 0; w < width; w++) {
-				const uint32 offset = w * channels + h * stride;
-				const uint8 *rbga = heightmap.data() + offset;
- 
-				vertex vertex_ = vertex();
-				vertex_.position_ = { w, rbga[2] * scale, h };
-
-				// calculate uv in range of 0-1
-				float u = (float)w / width;
-				float v = (float)h / height;
-				vertex_.texcoord_ = { u, v };
-
-				// normals
-				vertex_.normal_ = glm::vec3(0);
-
-				vertices.push_back(vertex_);
-			}
-		}
-
-		if (!vertex_buffer_.create(sizeof(vertex) * (int)vertices.size(), vertices.data())) {
-			return false;
-		}
-		
-		dynamic_array<uint32> index_array;
-		int x = 0; // pic width
-		int y = 0; // pic height
-		uint32 offset = 1;
-		for (uint32 index = 0; index < (uint32)width * (uint32)height; index ++) {
-
-			if (x >= width-1) {
-				x = 0;
-				y++;
-				continue;
-			}
-
-			x++;
-
-			if (y >= height-1) {
-				break;
-			}
-
-			// First triangle
-	
-			index_array.push_back(index);
-			index_array.push_back(index + offset);
-			index_array.push_back(index + offset + width);
-
-			// Second triangle
-			index_array.push_back(index + offset + width);
-			index_array.push_back(index + width);
-			index_array.push_back(index);
-		}
-
-		for (int i = 0; i <= vertices.size(); i++) {
-			// add normal to vertex
-
-			vertex a = vertices[index_array[i]];
-			vertex b = vertices[index_array[i + 1]];
-			vertex c = vertices[index_array[i + 2]];
-
-			glm::vec3 BA = glm::vec3(b.position_ - a.position_);
-			glm::vec3 CA = glm::vec3(c.position_ - a.position_);
-
-			vertices[index_array[i]].normal_ += glm::cross(BA, CA);
-
-			glm::vec3 AB = glm::vec3(a.position_ - b.position_);
-			glm::vec3 CB = glm::vec3(c.position_ - b.position_);
-
-			vertices[index_array[i + 1]].normal_ += glm::cross(c.position_ - b.position_, a.position_ - b.position_);
-			
-			glm::vec3 AC = glm::vec3(a.position_ - b.position_);
-			glm::vec3 BC = glm::vec3(c.position_ - b.position_);
-			
-			vertices[index_array[i + 2]].normal_ += glm::cross(a.position_ - c.position_, b.position_ - c.position_);
-		}
-
-		for (auto vertex : vertices) {
-			vertex.normal_ = glm::normalize(vertex.normal_);
-		}
-
-		if (!index_buffer_.create(sizeof(int) * (int)index_array.size(), GL_UNSIGNED_INT, index_array.data())) {
-			return false;
-		}
-
-		index_count_ = (int)index_array.size();
-		format_.add_attribute(0, 3, GL_FLOAT, false);
-		format_.add_attribute(1, 2, GL_FLOAT, false);
-		format_.add_attribute(2, 3, GL_FLOAT, false);
-
-		if (!program_.create("assets/heightmap/vertex_shader.shader", "assets/heightmap/fragment_shader.shader")) {
-			return false;
-		}
-
-		if (!sampler_.create(GL_LINEAR, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
-			return false;
-		}
-
-		if (!texture_.create(texture_filename, false)) {
-			return false;
-		}
-	
-		return true;
-	}
-
-	void terrain::destroy()
-	{
-	}
-
-	void terrain::render(const fps_camera& camera)
-	{
-		program_.bind();
-		program_.set_uniform_mat4("projection", camera.projection_);
-		program_.set_uniform_mat4("view", camera.view_);
-		program_.set_uniform_mat4("world", glm::mat4(1));
-		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
-
-		vertex_buffer_.bind();
-		index_buffer_.bind();
-		format_.bind();
-		texture_.bind();
-		sampler_.bind();
-
-		// Culling
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glFrontFace(GL_CW);
-
-		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
-	}
-
-
-	sphere::sphere() : radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)
-	{
-	}
-
-	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors) {
+	bool sphere::create(std::string texture_filename, float radius, int stacks, int sectors, float orbit) {
 		
 		radius_ = radius;
 		stacks_ = stacks;
 		sectors_ = sectors;
-		constexpr float PI = 3.14159265359f;
+		orbit_ = orbit;
+		rotation_speed_ = 10.0f;
 
 		vertices_.clear();
 
@@ -1088,16 +984,19 @@ namespace neon
 
 	void sphere::render(neon::fps_camera camera, const time& dt)
 	{
-		// rotation
-		rotation_ += dt.as_seconds() * rotationSpeed_;
+
+		// rotation around orbit
+		float angle = 2 * PI / orbit_;
+		rotation_ += dt.as_seconds() * angle * rotation_speed_;
+
 		spin_ += dt.as_seconds();
 
 		glm::mat4 transform = glm::mat4(1.0);
 
-		if (isMoon_) {
+		if (has_parent) {
 			// Rotate around origin (sun)
 			transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
-			transform = glm::translate(transform, pivot_);
+			transform = glm::translate(transform, parent_position_);
 			// Rotate around earth
 			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 1.0f, 0.0f));
 			transform = glm::translate(transform, position_);
@@ -1112,7 +1011,7 @@ namespace neon
 			transform = glm::translate(transform, position_);
 
 			// Rotate around self
-			transform = glm::rotate(transform, spin_, glm::vec3(0.0f, 0.0f, 1.0f));
+			transform = glm::rotate(transform, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
 		}
 
 		program_.bind();
@@ -1120,6 +1019,12 @@ namespace neon
 		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", transform);
 		program_.set_uniform_vec3("light_direction", glm::vec3(0, -1, 0));
+		program_.set_uniform_vec3("light_pos", glm::vec3(0, 50, 0));
+		program_.set_uniform_vec4("light_color", glm::vec4(1,1,0.5f,1));
+
+		glm::mat4 conversionMatrix = glm::inverse(camera.view_);
+		glm::vec3 cameraPos = (glm::vec3) conversionMatrix[3];	//Get the camera position from the view matrix.
+		program_.set_uniform_vec3("camera_pos", cameraPos);
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -1136,4 +1041,91 @@ namespace neon
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
 	}
 
+	void sphere::set_parent(glm::vec3 position)
+	{
+		has_parent = true;
+		parent_position_ = position;
+	}
+
+
+	depth_buffer::depth_buffer() : id_(0)
+	{
+	}
+
+	bool depth_buffer::create(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		glGenRenderbuffers(1, &id_);
+		glBindRenderbuffer(GL_RENDERBUFFER, id_);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id_);
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	void depth_buffer::destroy()
+	{
+	}
+
+	bool depth_buffer::is_valid() const
+	{
+		return id_ != 0;
+	}
+
+	frame_buffer::frame_buffer() : id_(0)
+	{
+	}
+
+	bool frame_buffer::create(int width, int height)
+	{
+		if (is_valid()) {
+			return false;
+		}
+
+		// create framebuffer
+		glGenRenderbuffers(1, &id_);
+		glBindRenderbuffer(GL_RENDERBUFFER, id_);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id_);
+
+		// create texture attachment
+		depth_texture_.createDepthTexture(width, height);
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			return false;
+		}
+
+		GLenum error = glGetError();
+		return error == GL_NO_ERROR;
+	}
+
+	void frame_buffer::destroy()
+	{
+		glDeleteFramebuffers(1, &id_);
+		glDeleteTextures(1, &color_texture_.id_);
+		glDeleteTextures(1, &depth_texture_.id_);
+		//glDeleteRenderbuffers(1, &depth_buffer_.id_);
+	}
+
+	void frame_buffer::bind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, 0); // unbind texture if there is any
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id_);
+	}
+
+	void frame_buffer::unbind() const {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDrawBuffer(GL_NONE);
+	}
+
+	bool frame_buffer::is_valid() const
+	{
+		return id_ != 0;
+	}
 } //!neon

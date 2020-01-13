@@ -8,7 +8,6 @@
 
 #include "neon_graphics.h"
 
-// Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
 namespace neon 
 {
@@ -28,20 +27,20 @@ namespace neon
       virtual void exit() final;
       virtual bool tick(const time &dt) final;
 
-	  shader_program program_;
 	  vertex_buffer vbo_;
-	  index_buffer index_buffer_;
-	  vertex_format format_;
-	  texture texture_;
-	  sampler_state sampler_;
 
 	  float rotation_;
 	  bitmap_font font_;
+	  bitmap_font signed_font_;
 
 	  fps_camera camera_;
+	  directional_light light_;
 	  fps_camera_controller controller_;
 	  skybox skybox_;
-	  terrain terrain_;
+
+	  glm::mat4 world_ = glm::mat4(1);
+
+
 	  sphere earth_;
 	  sphere moon_;
 	  sphere mars_;

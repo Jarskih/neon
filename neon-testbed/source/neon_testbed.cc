@@ -75,115 +75,16 @@ namespace neon {
 	   glGenVertexArrays(1, &vao);
 	   glBindVertexArray(vao);
 
-	   vertex vertices[] =
+	   // Create light
 	   {
-		   //Yellow Triangle
-		   /*
-			{  0.0,   1.0f,	 0.0f,	0xff00ffff,		0.5f, 1.0f}, // UPPER
-			{  1.0f,  0.0f,	 0.0f,	0xff00ffff,		1.0f, 0.0f}, // RIGHT
-			{ -1.0f,  0.0f,  0.0f,	0xff00ffff,		0.0f, 0.0f}, // LEFT
-			*/
-
-		   // cube 
-
-		   // front 1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
-		   // front 2
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //2
-		   { 0.0f,  1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //0
-		   // right side 1
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
-		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   // right side 2
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   { 1.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0f}, //2
-		  // left side 1
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-		   {0.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0}, //0
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
-		  // left side 2
-		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0}, //7
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
-
-		  // bottom 1
-			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f},  //4
-		  // bottom 2
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-	       { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-
-		  // back 1
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
-		  // back 2									  
-		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
-
-		   //top 1
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
-		  {1.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   //top 2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		  {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
-	   };
-	   
-	   if (!vbo_.create(sizeof(vertices), vertices))
-	   {
-		   return false;
+		   glm::vec4 white = glm::vec4(1);
+		   if (!light_.create(white, glm::vec3(0,1,0))) {
+			   return false;
+		   }
 	   }
-
-	   if (!program_.create("assets/vertex_shader.txt", "assets/fragment_shader.txt"))
-	   {
-		   return false;
-	   }
-
-	   format_.add_attribute(0, 3, GL_FLOAT, false);
-	   format_.add_attribute(1, 4, GL_UNSIGNED_BYTE, true);
-	   format_.add_attribute(2, 2, GL_FLOAT, false);
-
-	   // Create texture
-	   if (!texture_.create("assets/test.png")) {
-		   return false;
-	   }
-
-	   // Create sampler
-	   if (!sampler_.create(GL_NEAREST, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE)) {
-		   return false;
-	   }
-
-	   //Note: uniforms
-
-	   GLfloat aspect = 16.0f / 9.0f;
-	   glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.5f, 100.0f);
-
-	   glm::mat4 world = glm::translate(glm::mat4(1.0f), 
-										glm::vec3(0.0f, 0.0f, -5.0f));
-
-	   program_.bind();
-	   program_.set_uniform_mat4("projection", projection);
-	   program_.set_uniform_mat4("world", world);
-	
-
-	   GLenum error = glGetError();
-	   if (error != GL_NO_ERROR)
-	   {
-		   // ...
-	   };
 
 	   // Create text font
-	   if (!font_.create()) {
+	   if (!font_.create("assets/fonts/bitmap_font_vertex.shader", "assets/fonts/bitmap_font_fragment.shader", "assets/fonts/font_8x8.png")) {
 		   return false;
 	   };
 
@@ -191,65 +92,61 @@ namespace neon {
 		   return false;
 	   };
 
-	   if (!terrain_.create("assets/heightmap/heightmap.png", "assets/heightmap/texture.png")) {
-		   return false;
-	   }
-
 	   // Planets
 	   sun_.position_ = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36)) {
+	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36, 0.01f)) {
 		   return false;
 	   }
 
 	   mercury_.position_ = glm::vec3(58.0f, 0.0f, 0.0f);
-	   if (!mercury_.create("assets/sphere/2k_mercury.jpg", 2.440f, 36, 36)) {
+	   if (!mercury_.create("assets/sphere/2k_mercury.jpg", 2.440f, 36, 36, 180)) {
 		   return false;
 	   }
 
 	   venus_.position_ = glm::vec3(108.0f, 0.0f, 0.0f);
-	   if (!venus_.create("assets/sphere/2k_venus_atmosphere.jpg", 6.052f, 36, 36)) {
+	   if (!venus_.create("assets/sphere/2k_venus_atmosphere.jpg", 6.052f, 36, 36, 240)) {
 		   return false;
 	   }
 
 	   earth_.position_ = glm::vec3(150.0f, 0.0f, 0.0f);
-	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36)) {
+	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36, 365)) {
 	 	   return false;
 	   }
 
-	   moon_.position_ = glm::vec3(15.0f, 0.0f, 0.0f); // Relative to parent (earth)
-	   moon_.pivot_ = earth_.position_;
-	   moon_.isMoon_ = true;
-	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36)) {
+	   moon_.position_ = glm::vec3(15.0f, 0.0f, 0.0f); // Relative to parent
+	   moon_.set_parent(earth_.position_);
+	   if (!moon_.create("assets/sphere/2k_moon.jpg", 1.0f, 36, 36, 365)) {
 		   return false;
 	   }
 
 	   mars_.position_ = glm::vec3(227.0f, 0.0f, 0.0f);
-	   if (!mars_.create("assets/sphere/2k_mars.jpg", 3.397f, 36, 36)) {
+	   if (!mars_.create("assets/sphere/2k_mars.jpg", 3.397f, 36, 36, 400)) {
 		   return false;
 	   }
 
-	   jupiter_.position_ = glm::vec3(778.0f, 0.0f, 0.0f);
-	   if (!jupiter_.create("assets/sphere/2k_jupiter.jpg", 71.492f, 36, 36)) {
+	   jupiter_.position_ = glm::vec3(300.0f, 0.0f, 0.0f);
+	   if (!jupiter_.create("assets/sphere/2k_jupiter.jpg", 71.492f, 36, 36, 500)) {
 		   return false;
 	   }
 
-	   saturn_.position_ = glm::vec3(1434.0f, 0.0f, 0.0f);
-	   if (!saturn_.create("assets/sphere/2k_saturn.jpg", 60.268f, 36, 36)) {
+	   saturn_.position_ = glm::vec3(434.0f, 0.0f, 0.0f);
+	   if (!saturn_.create("assets/sphere/2k_saturn.jpg", 60.268f, 36, 36, 600)) {
 		   return false;
 	   }
 
-	   uranus_.position_ = glm::vec3(2871.0f, 0.0f, 0.0f);
-	   if (!uranus_.create("assets/sphere/2k_uranus.jpg", 25.559f, 36, 36)) {
+	   uranus_.position_ = glm::vec3(571.0f, 0.0f, 0.0f);
+	   if (!uranus_.create("assets/sphere/2k_uranus.jpg", 25.559f, 36, 36, 700)) {
 		   return false;
 	   }
 
-	   neptune_.position_ = glm::vec3(4496.0f, 0.0f, 0.0f);
-	   if (!neptune_.create("assets/sphere/2k_neptune.jpg", 24.766f, 36, 36)) {
+	   neptune_.position_ = glm::vec3(600, 0.0f, 0.0f);
+	   if (!neptune_.create("assets/sphere/2k_neptune.jpg", 24.766f, 36, 36, 800)) {
 		   return false;
 	   }
 
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
+	   camera_.position_ = { 0, 0, 1000 };
 
       return true;
    }
@@ -262,21 +159,40 @@ namespace neon {
          return false;
       }
 
+	  if (keyboard_.is_down(KEYCODE_Z)) {
+		  light_.position_ = glm::vec3(light_.position_.x + dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_X)) {
+		  light_.position_ = glm::vec3(light_.position_.x - dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_C)) {
+		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y + dt.as_seconds() * 10.0f, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+	  if (keyboard_.is_down(KEYCODE_V)) {
+		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y - dt.as_seconds() * 10.0f, light_.position_.z);
+		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+	  }
+
+
 	  // Update camera
 	  controller_.update(dt);
 
-	  string text = "dt: " + std::to_string(dt.as_milliseconds()) + " (FPS:" + std::to_string(1.0f/dt.as_seconds()) + ")";
-	  font_.render_text(2.0f, 2.0f, text);
-
-	  // clear
+	
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	  string text = "dt: " + std::to_string(dt.as_milliseconds()) + 
+		  " (FPS: " + std::to_string(1.0f / dt.as_seconds()) + ")";
+	  font_.render_text(2.0f, 2.0f, text);;
 
 	  skybox_.render(camera_);
-
-	//  terrain_.render(camera_);
 	  earth_.render(camera_, dt);
-	  moon_.pivot_ = earth_.position_;
 	  moon_.render(camera_, dt);
 	  mars_.render(camera_, dt);
 	  jupiter_.render(camera_, dt);
