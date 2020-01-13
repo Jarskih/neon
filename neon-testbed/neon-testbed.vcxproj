@@ -62,7 +62,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DisableSpecificWarnings>4100;4189;4505;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>include\;external\glm\include\;..\neon-core\include\;external\;external\imgui\;external\assimp\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external\glm\include\;..\neon-core\include\;external\;external\imgui\;external\assimp\include\;include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

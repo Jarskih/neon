@@ -2,6 +2,8 @@
 
 #include "neon_graphics.h"
 #include <cassert>
+#include <sstream>
+#include <fstream>
 
 // #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -481,9 +483,9 @@ namespace neon
 
 	}
 
-	bool bitmap_font::create()
+	bool bitmap_font::create(const string vertex, const string fragment, const string font)
 	{
-		if (!program_.create("assets/bitmap_font_vertex_shader.shader", "assets/bitmap_font_fragment_shader.shader")) {
+		if (!program_.create(vertex, fragment)) {
 			return false;
 		}
 
@@ -494,7 +496,7 @@ namespace neon
 			return false;
 		}
 
-		if (!texture_.create("assets/font_8x8.png", false)) {
+		if (!texture_.create(font, false)) {
 			return false;
 		}
 
@@ -576,10 +578,11 @@ namespace neon
 	{
 	}
 
-	bool directional_light::create(glm::vec4 color, glm::mat4 projection, glm::vec3 direction) {
+	bool directional_light::create(glm::vec4 color, glm::vec3 direction) {
+		projection_ = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 		color_ = color;
-		projection_ = projection;
 		direction_ = direction;
+		// TODO remove position
 		position_ = { 0, 50, 0 };
 		view_ = glm::lookAt(position_, glm::vec3(0), glm::vec3(0, 1, 0));
 		return true;

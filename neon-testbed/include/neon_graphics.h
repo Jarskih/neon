@@ -130,7 +130,7 @@ namespace neon
 
 		bitmap_font();
 
-		bool create();
+		bool create(const string vertex, const string fragment, const string font);
 		void destroy();
 
 		void render_text(const float p_x, const float p_y, const string& text);
@@ -148,7 +148,7 @@ namespace neon
 	struct directional_light {
 		directional_light();
 
-		bool create(glm::vec4 color, glm::mat4 projection, glm::vec3 direction);
+		bool create(glm::vec4 color, glm::vec3 direction);
 		glm::vec3 direction_;
 		glm::vec4 color_;
 		glm::mat4 projection_;

@@ -84,61 +84,61 @@ namespace neon {
 			{ -1.0f,  0.0f,  0.0f,	0xff00ffff,		0.0f, 0.0f}, // LEFT
 			*/
 
-		   // cube 
+			// cube 
 
-		   // front 1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
-		   // front 2
-		   { 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //2
-		   { 0.0f,  1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //0
-		   // right side 1
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
-		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   // right side 2
-		   { 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   { 1.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0f}, //2
-		  // left side 1
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-		   {0.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0}, //0
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
-		  // left side 2
-		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0}, //7
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
+			// front 1
+			{ 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
+			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+			{ 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
+			// front 2
+			{ 1.0f,  1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //2
+			{ 0.0f,  1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
+			{ 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0}, //0
+			// right side 1
+			{ 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
+			{ 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
+			{ 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+			// right side 2
+			{ 1.0f, 0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //1
+			{ 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+			{ 1.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0f}, //2
+		   // left side 1
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
+			{0.0f, 0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0}, //0
+			{0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
+		   // left side 2
+			{0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0}, //7
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
+			{0.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0}, //3
 
-		  // bottom 1
-			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,	1.0f, 0.0f}, //1
-		   { 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f},  //4
-		  // bottom 2
-		   { 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
-	       { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
+		   // bottom 1
+			 { 1.0f,  0.0f, 1.0f, 0xff00ffff,	1.0f, 0.0f}, //1
+			{ 0.0f,  0.0f, 1.0f, 0xff00ffff,		0.0f, 0.0f}, //0
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f},  //4
+		   // bottom 2
+			{ 1.0f,  0.0f, 1.0f, 0xff00ffff,		1.0f, 0.0f}, //1
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0}, //4
+			{ 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
 
-		  // back 1
+		   // back 1
+			{ 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+			{ 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
+		   // back 2									  
+			{0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
+			{ 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
+			{0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
+
+			//top 1
+		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
+		   {1.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
 		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   { 1.0f, 0.0f, 0.0f, 0xff00ffff,		1.0f, 0.0f}, //5
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
-		  // back 2									  
+			//top 2
+		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
 		   {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
-		   { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   {0.0f, 0.0f, 0.0f, 0xff00ffff,		0.0f, 0.0f}, //4
-
-		   //top 1
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
-		  {1.0f, 1.0f, 1.0f, 0xff00ffff,		1.0f, 1.0f}, //2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		   //top 2
-		  { 1.0f, 1.0f, 0.0f, 0xff00ffff,		1.0f, 1.0f}, //6
-		  {0.0f, 1.0f, 0.0f, 0xff00ffff,		0.0f, 1.0f}, //7
-		  {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
+		   {0.0f, 1.0f, 1.0f, 0xff00ffff,		0.0f, 1.0}, //3
 	   };
-	   
+
 	   if (!vbo_.create(sizeof(vertices), vertices))
 	   {
 		   return false;
@@ -166,32 +166,21 @@ namespace neon {
 	   // Create light
 	   {
 		   float near_plane = 1.0f, far_plane = 7.5f;
-		   if (!light_.create(glm::vec4(1), glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane), glm::vec3(0,1,0))) {
+		   glm::vec4 white = glm::vec4(1);
+		   if (!light_.create(white, glm::vec3(0,1,0))) {
 			   return false;
 		   }
 	   }
 
-	   //Note: uniforms
-	   {
-		   GLfloat aspect = 16.0f / 9.0f;
-		   glm::mat4 projection = glm::perspective(glm::radians(45.0f), aspect, 0.5f, 100.0f);
+	   // Create framebuffer
+	   framebuffer_format formats[] = { FRAMEBUFFER_FORMAT_RGBA8 };
 
-		   glm::mat4 world = glm::translate(glm::mat4(1.0f),
-			   glm::vec3(0.0f, 0.0f, -5.0f));
-
-		   program_.bind();
-		   program_.set_uniform_mat4("projection", projection);
-		   program_.set_uniform_mat4("world", world);
+	   if (!framebuffer_.create(240, 132, _countof(formats), formats, FRAMEBUFFER_FORMAT_D32)) {
+		   return false;
 	   }
 
-	   GLenum error = glGetError();
-	   if (error != GL_NO_ERROR)
-	   {
-		   // ...
-	   };
-
 	   // Create text font
-	   if (!font_.create()) {
+	   if (!font_.create("assets/fonts/bitmap_font_vertex_shader.shader", "assets/fonts/bitmap_font_fragment_shader.shader", "assets/fonts/font_8x8.png")) {
 		   return false;
 	   };
 
@@ -267,12 +256,6 @@ namespace neon {
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
 	   camera_.position_ = { 0, 0, 1000 };
 
-	   framebuffer_format formats[] = { FRAMEBUFFER_FORMAT_RGBA8 };
-
-	   if (!framebuffer_.create(240, 132, _countof(formats), formats, FRAMEBUFFER_FORMAT_D32)) {
-		   return false;
-	   }
-
       return true;
    }
 
@@ -314,8 +297,8 @@ namespace neon {
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	  terrain_.render_shadow_map(light_);
-	  model_.render_shadow_map(light_);
+//	  terrain_.render_shadow_map(light_);
+//	  model_.render_shadow_map(light_);
 
 	  framebuffer::unbind(1280, 720);
 
@@ -324,22 +307,15 @@ namespace neon {
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	  string text = "dt: " + std::to_string(dt.as_seconds());
-	  font_.render_text(2.0f, 2.0f, text);
+	  font_.render_text(2.0f, 2.0f, text);;
 
 	  framebuffer_.bind_as_depth(1);
 
 	  skybox_.render(camera_);
-	  terrain_.render(camera_, light_);
-	  model_.render(camera_, model_matrix_);
+	 // terrain_.render(camera_, light_);
+	 // model_.render(camera_, model_matrix_);
 
 	 // framebuffer_.blit(0, 0, 1280, 720);
-
-
-	  /*
-		correct rotation
-	    float angle = 20.0f * i;
-		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-	  */
 
 	  earth_.render(camera_, dt);
 	  moon_.pivot_ = earth_.position_;

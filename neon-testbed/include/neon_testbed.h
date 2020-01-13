@@ -11,7 +11,6 @@
 #include "neon_model.h"
 #include "neon_terrain.h"
 
-// Render triangle in 3d: add Z component, add attribute, add vertice for Z
 
 namespace neon 
 {
@@ -40,6 +39,7 @@ namespace neon
 
 	  float rotation_;
 	  bitmap_font font_;
+	  bitmap_font signed_font_;
 
 	  fps_camera camera_;
 	  directional_light light_;
