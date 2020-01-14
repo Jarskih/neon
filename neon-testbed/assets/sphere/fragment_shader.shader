@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D diffuse;
+uniform sampler2D shadowMap;
 uniform vec4 light_color;
 uniform vec3 light_direction;
 
@@ -8,11 +9,28 @@ in vec3 f_normal;
 in vec2 f_texcoord;
 in vec3 f_view_pos;
 in vec3 f_position;
-//in vec3 light_pos;
+in vec4 f_shadow;
 
 out vec4 frag_color;
 
-const float shininess = 16.0;
+const float shininess = 50.0f;
+
+// https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+float ShadowCalculation(vec4 fragPosLightSpace)
+{
+	// perform perspective divide
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	// transform to [0,1] range
+	projCoords = projCoords * 0.5 + 0.5;
+	// get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+	float closestDepth = texture(shadowMap, projCoords.xy).r;
+	// get depth of current fragment from light's perspective
+	float currentDepth = projCoords.z;
+	// check whether current frag pos is in shadow
+	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+	return shadow;
+}
 
 void main()
 {
@@ -24,7 +42,7 @@ void main()
 	vec4 tex_color = texture(diffuse, f_texcoord);
 
 	// Ambient light
-	vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
+	vec3 ambient = 0.1f * tex_color.rgb;
 
 	// Diffuse light
 	float NdL = clamp(dot(N, -L), 0, 1);
@@ -39,5 +57,7 @@ void main()
 	}
 
 	// output = Phong shading https://en.wikipedia.org/wiki/Phong_shading
-	frag_color = tex_color * vec4(ambient, 1) + diffuse + vec4(finalSpec,1);
+	float shadow = ShadowCalculation(f_shadow);
+	vec3 lighting = (ambient + (1.0 - shadow) * (vec3(diffuse) + finalSpec)) * tex_color.rgb;
+	frag_color = vec4(lighting, 1);
 }

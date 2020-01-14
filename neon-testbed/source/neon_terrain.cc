@@ -265,11 +265,10 @@ namespace neon {
 
 	void terrain::render(const fps_camera& camera, const directional_light& light, glm::mat4 world)
 	{
-		glm::mat4 light_matrix = light.projection_ * light.view_ * world;
+		glm::mat4 light_matrix = light.projection_ * world;
 
 		program_.bind();
 		program_.set_uniform_mat4("projection", camera.projection_);
-		program_.set_uniform_mat4("view", camera.view_);
 		program_.set_uniform_mat4("world", world);
 		program_.set_uniform_mat4("light_matrix", light_matrix);
 		program_.set_uniform_vec3("light_direction", light.direction_);
@@ -296,7 +295,7 @@ namespace neon {
 
 	void terrain::render_shadow_map(const directional_light& light)
 	{
-		glm::mat4 light_matrix = light.projection_ * light.view_;
+		glm::mat4 light_matrix = light.projection_ * glm::mat4(1);
 
 		shadow_program_.bind();
 		shadow_program_.set_uniform_mat4("lightSpaceMatrix", light_matrix);

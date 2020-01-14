@@ -152,8 +152,7 @@ namespace neon
 		glm::vec3 direction_;
 		glm::vec4 color_;
 		glm::mat4 projection_;
-		glm::mat4 view_;
-		glm::vec3 position_;
+
 	};
 
 	struct fps_camera {
@@ -205,74 +204,6 @@ namespace neon
 		vertex_format format_;
 		sampler_state sampler_;
 		texture cubemap_;
-	};
-
-	
-	struct sphere {
-
-		struct vertex {
-			glm::vec3 position_;
-			glm::vec2 texcoord_;
-			glm::vec3 normal_;
-		};
-
-		sphere();
-
-		bool create(std::string texture_filename, float radius, int stacks, int sectors, float orbit);
-		void render(fps_camera camera, const time& dt);
-
-		glm::vec3 position_;
-		float radius_;
-		int stacks_;
-		int sectors_;
-		float sectorStep_;
-		float stackStep_;
-		int index_count_;
-		float rotation_;
-		float spin_;
-		float rotationSpeed_;
-		glm::vec3 pivot_;
-		bool isMoon_;
-		float orbit_;
-
-		dynamic_array<vertex> vertices_;
-		shader_program program_;
-		vertex_buffer vertex_buffer_;
-		vertex_format format_;
-		index_buffer index_buffer_;
-		texture texture_;
-		sampler_state sampler_;
-	};
-
-	struct depth_buffer {
-		depth_buffer();
-
-		bool create(int width, int height);
-
-		void destroy();
-
-		bool is_valid() const;
-
-		GLuint id_;
-	};
-
-	struct frame_buffer {
-		frame_buffer();
-
-		bool create(int width, int height);
-
-		void destroy();
-		void bind() const;
-
-		void unbind() const;
-
-		bool is_valid() const;
-
-		GLuint id_;
-		
-		texture color_texture_;
-		texture depth_texture_;
-		depth_buffer depth_buffer_;
 	};
 
 } //!neon

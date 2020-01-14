@@ -95,6 +95,7 @@
     <ClCompile Include="source\neon_framebuffer.cc" />
     <ClCompile Include="source\neon_graphics.cc" />
     <ClCompile Include="source\neon_model.cc" />
+    <ClCompile Include="source\neon_sphere.cpp" />
     <ClCompile Include="source\neon_terrain.cc" />
     <ClCompile Include="source\neon_testbed.cc" />
   </ItemGroup>
@@ -180,6 +181,7 @@
     <ClInclude Include="include\neon_framebuffer.h" />
     <ClInclude Include="include\neon_graphics.h" />
     <ClInclude Include="include\neon_model.h" />
+    <ClInclude Include="include\neon_sphere.h" />
     <ClInclude Include="include\neon_terrain.h" />
     <ClInclude Include="include\neon_testbed.h" />
     <ClInclude Include="source\stb_image.h" />
@@ -191,8 +193,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shadow\fragment.shader" />
-    <None Include="assets\shadow\shadow_fragment.shader" />
-    <None Include="assets\shadow\shadow_vertex.shader" />
     <None Include="assets\shadow\vertex.shader" />
     <None Include="external\assimp\include\assimp\color4.inl" />
     <None Include="external\assimp\include\assimp\material.inl" />

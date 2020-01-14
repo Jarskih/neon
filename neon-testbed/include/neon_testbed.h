@@ -10,7 +10,7 @@
 #include "neon_framebuffer.h"
 #include "neon_model.h"
 #include "neon_terrain.h"
-
+#include "neon_sphere.h"
 
 namespace neon 
 {

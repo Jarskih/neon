@@ -170,7 +170,7 @@ namespace neon {
        glDisable(GL_CULL_FACE);
        glFrontFace(GL_CW);
 
-       glm::mat4 light_matrix = light.projection_ * light.view_;
+       glm::mat4 light_matrix = light.projection_ * glm::mat4(1);
 
        shadow_program_.bind();
        shadow_program_.set_uniform_mat4("lightSpaceMatrix", light_matrix);
