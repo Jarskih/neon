@@ -40,7 +40,6 @@ namespace neon
 
 	  glm::mat4 world_ = glm::mat4(1);
 
-
 	  sphere earth_;
 	  sphere moon_;
 	  sphere mars_;

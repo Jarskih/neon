@@ -10,9 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #pragma warning(pop)
 
-//#include <imgui/imgui.h>
-//#include <imgui/imgui_impl_glfw.h>
-//#include <imgui/imgui_impl_opengl3.h>
 
 namespace neon {
    // note: application factory
@@ -76,11 +73,9 @@ namespace neon {
 	   glBindVertexArray(vao);
 
 	   // Create light
-	   {
-		   glm::vec4 white = glm::vec4(1);
-		   if (!light_.create(white, glm::vec3(0,1,0))) {
-			   return false;
-		   }
+	   glm::vec4 white = glm::vec4(1);
+	   if (!light_.create(white, glm::vec3(0,1,0))) {
+	      return false;
 	   }
 
 	   // Create text font
@@ -159,36 +154,15 @@ namespace neon {
          return false;
       }
 
-	  if (keyboard_.is_down(KEYCODE_Z)) {
-		  light_.position_ = glm::vec3(light_.position_.x + dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
-		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
-	  }
-
-	  if (keyboard_.is_down(KEYCODE_X)) {
-		  light_.position_ = glm::vec3(light_.position_.x - dt.as_seconds() * 10.0f, light_.position_.y, light_.position_.z);
-		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
-	  }
-
-	  if (keyboard_.is_down(KEYCODE_C)) {
-		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y + dt.as_seconds() * 10.0f, light_.position_.z);
-		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
-	  }
-
-	  if (keyboard_.is_down(KEYCODE_V)) {
-		  light_.position_ = glm::vec3(light_.position_.x, light_.position_.y - dt.as_seconds() * 10.0f, light_.position_.z);
-		  light_.view_ = glm::lookAt(light_.position_, glm::vec3(0), glm::vec3(0, 1, 0));
-	  }
-
-
 	  // Update camera
 	  controller_.update(dt);
-
 	
 	  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	  string text = "dt: " + std::to_string(dt.as_milliseconds()) + 
 		  " (FPS: " + std::to_string(1.0f / dt.as_seconds()) + ")";
+
 	  font_.render_text(2.0f, 2.0f, text);;
 
 	  skybox_.render(camera_);
