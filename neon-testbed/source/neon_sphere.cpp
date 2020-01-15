@@ -1,5 +1,4 @@
 #include "neon_sphere.h"
-#include "..\include\neon_sphere.h"
 
 namespace neon {
 	sphere::sphere() : position_(0), radius_(0), stacks_(0), sectors_(0), sectorStep_(0), stackStep_(0), index_count_(0), rotation_(0), spin_(0), rotationSpeed_(0.1f), pivot_(0), isMoon_(false)

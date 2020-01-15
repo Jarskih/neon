@@ -2,8 +2,6 @@
 
 #include "neon_graphics.h"
 #include <cassert>
-#include <sstream>
-#include <fstream>
 
 // #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

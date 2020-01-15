@@ -10,10 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #pragma warning(pop)
 
-//#include <imgui/imgui.h>
-//#include <imgui/imgui_impl_glfw.h>
-//#include <imgui/imgui_impl_opengl3.h>
-
 namespace neon {
    // note: application factory
    application *application::create(int &width, int &height, string &title) {
