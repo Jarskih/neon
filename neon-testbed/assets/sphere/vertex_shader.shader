@@ -24,5 +24,5 @@ void main()
 	vec3 transformed_normal = mat3(world) * normal;
 	f_normal = normalize(transformed_normal);
 
-	f_shadow = light_matrix * vec4(f_position, 1);
+	f_shadow = light_matrix * world * vec4(position, 1);
 }

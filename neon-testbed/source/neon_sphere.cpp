@@ -176,11 +176,9 @@ namespace neon {
 		// Translate to orbit
 		transform = glm::translate(transform, position_);
 
-		glm::vec3 position = glm::vec3(0);
-		glm::vec3 target = position + light.direction_;
-		glm::mat4 view_matrix = glm::lookAt(position, target, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		glm::mat4 lightVP = light.projection_ * view_matrix;
+		glm::vec3 pos = glm::vec3(0);
+		glm::mat4 view_ = glm::lookAt(pos, light.direction_, glm::vec3(0, 1, 0));
+		glm::mat4 lightMV = light.projection_ * view_;
 
 		program_.bind();
 		program_.set_uniform_mat4("view", camera.view_);
@@ -189,7 +187,7 @@ namespace neon {
 
 		program_.set_uniform_vec3("light_direction", light.direction_);
 		program_.set_uniform_vec4("light_color", light.color_);
-		program_.set_uniform_mat4("light_matrix", lightVP);
+		program_.set_uniform_mat4("light_matrix", lightMV);
 
 		vertex_buffer_.bind();
 		index_buffer_.bind();
@@ -208,15 +206,12 @@ namespace neon {
 
 	void sphere::render_shadow_map(const directional_light& light, fps_camera camera)
 	{
-		glm::vec3 position = glm::vec3(0);
-		glm::vec3 target = position + light.direction_;
-		glm::mat4 view_matrix = glm::lookAt(position, target, glm::vec3(0.0f, 1.0f, 0.0f));
-
-		glm::mat4 lightVP = light.projection_ * view_matrix;
-
+		glm::vec3 pos = glm::vec3(0);
+		glm::mat4 view_ = glm::lookAt(pos, light.direction_, glm::vec3(0, 1, 0));
+		glm::mat4 lightMV = light.projection_ * view_;
 
 		shadow_program_.bind();
-		shadow_program_.set_uniform_mat4("lightSpaceMatrix", lightVP);
+		shadow_program_.set_uniform_mat4("light_matrix", lightMV);
 		shadow_program_.set_uniform_mat4("world", glm::mat4(1));
 
 		vertex_buffer_.bind();

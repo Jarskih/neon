@@ -19,7 +19,7 @@ namespace neon {
 		void destroy();
 
 		void render(const fps_camera& camera, const directional_light& light, glm::mat4 world = glm::mat4(1));
-		void render_shadow_map(const directional_light& light);
+		void render_shadow_map(const directional_light& light, fps_camera camera);
 
 		shader_program program_;
 		shader_program shadow_program_;

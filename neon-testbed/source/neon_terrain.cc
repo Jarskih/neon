@@ -293,12 +293,13 @@ namespace neon {
 		index_buffer_.render(GL_TRIANGLES, 0, index_count_);
 	}
 
-	void terrain::render_shadow_map(const directional_light& light)
+	void terrain::render_shadow_map(const directional_light& light, fps_camera camera)
 	{
-		glm::mat4 light_matrix = light.projection_ * glm::mat4(1);
+		glm::mat4 view_ = glm::lookAt(camera.position_, glm::vec3(0), glm::vec3(0, 1, 0));
+		glm::mat4 lightVP = light.projection_ * view_;
 
 		shadow_program_.bind();
-		shadow_program_.set_uniform_mat4("lightSpaceMatrix", light_matrix);
+		shadow_program_.set_uniform_mat4("lightSpaceMatrix", lightVP);
 		shadow_program_.set_uniform_mat4("model", glm::mat4(1));
 
 		vertex_buffer_.bind();

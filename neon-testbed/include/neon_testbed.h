@@ -8,8 +8,6 @@
 
 #include "neon_graphics.h"
 #include "neon_framebuffer.h"
-#include "neon_model.h"
-#include "neon_terrain.h"
 #include "neon_sphere.h"
 
 namespace neon 
@@ -49,19 +47,9 @@ namespace neon
 	  framebuffer framebuffer_;
 	  glm::mat4 world_ = glm::mat4(1);
 
-	  model model_;
-	  glm::mat4 model_matrix_;
-
-	  terrain terrain_;
 	  sphere earth_;
-	  sphere moon_;
-	  sphere mars_;
 	  sphere jupiter_;
-	  sphere mercury_;
-	  sphere neptune_;
 	  sphere saturn_;
-	  sphere uranus_;
-	  sphere venus_;
 	  sphere sun_;
    };
 } // !neon

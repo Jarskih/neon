@@ -577,7 +577,7 @@ namespace neon
 	}
 
 	bool directional_light::create(glm::vec4 color, glm::vec3 direction) {
-		projection_ = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
+		projection_ = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 1000.0f);
 		color_ = color;
 		direction_ = direction;
 		return true;

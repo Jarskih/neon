@@ -95,19 +95,15 @@ namespace neon {
 		   return false;
 	   };
 
-	   if (!terrain_.create("assets/heightmap/heightmap.png", "assets/heightmap/texture.png")) {
-		   return false;
-	   }
-
 	   // Planets
-	   sun_.position_ = glm::vec3(50.0f, 50.0f, 50.0f);
+	   sun_.position_ = glm::vec3(0, 0, 0);
 
 	   if (!sun_.create("assets/sphere/2k_sun.jpg", 30, 36, 36, 0.01f)) {
 		   return false;
 	   }
 
 	   earth_.position_ = glm::vec3(150.0f, 0.0f, 0.0f);
-	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 6.378f, 36, 36, 365)) {
+	   if (!earth_.create("assets/sphere/2k_earth_daymap.jpg", 60.378f, 36, 36, 365)) {
 	 	   return false;
 	   }
 
@@ -121,15 +117,8 @@ namespace neon {
 		   return false;
 	   }
 
-	   if (!model_.create_from_file("assets/model/Chest.FBX", "assets/model/vertex_shader.txt", "assets/model/fragment_shader.txt", "assets/model/diffuse.png")) {
-		   return false;
-	   }
-
-	   model_matrix_ = glm::translate(glm::mat4(1), glm::vec3(50.0f, 30.0f, 50.0f));
-	   model_matrix_ = glm::scale(model_matrix_, glm::vec3(0.2f));
-
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
-	   camera_.position_ = { 5, 5, 5 };
+	   camera_.position_ = { 0, 0, 1000 };
 
       return true;
    }
@@ -189,16 +178,16 @@ namespace neon {
 
 	  string text = "dt: " + std::to_string(dt.as_milliseconds()) +
 		  " (FPS: " + std::to_string(1.0f / dt.as_seconds()) + ")";
+	  font_.render_text(2.0f, 2.0f, text);;
+   	
+	  // framebuffer_.blit(0, 0, 1280, 720);
+   	
+   	  framebuffer_.bind_as_depth(1);
 
-	  framebuffer_.bind_as_depth(1);
-
-	  skybox_.render(camera_);
 	  sun_.render(camera_, dt, light_);
 	  earth_.render(camera_, dt, light_);
 	  jupiter_.render(camera_, dt, light_);
 	  saturn_.render(camera_, dt, light_);
-
-	  // framebuffer_.blit(0, 0, 1280, 720);
 
 	  // Draw text
 	  font_.flush();
