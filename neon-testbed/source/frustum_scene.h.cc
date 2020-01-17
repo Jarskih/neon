@@ -1,5 +1,7 @@
 // neon_graphics.h
 
+#include "neon_graphics.h"
+
 namespace neon {
 struct bounding_sphere {
    bounding_sphere();
@@ -57,7 +59,7 @@ struct transform {
 struct renderable {
    renderable();
 
-   void render(const camera &camera);
+   void render(const fps_camera &camera);
 
    shader_program *program_;
    texture *texture_;
@@ -78,7 +80,7 @@ struct scene {
 
    scene();
 
-   void render(const camera &camera);
+   void render(const fps_camera &camera);
 
    dynamic_array<node> nodes_;
 }; 
@@ -220,7 +222,7 @@ namespace neon {
    {
    }
 
-   void renderable::render(const camera &camera) {
+   void renderable::render(const fps_camera &camera) {
       // ...
    }
 
@@ -232,7 +234,7 @@ namespace neon {
    {
    }
 
-   void scene::render(const camera &camera) {
+   void scene::render(const fps_camera &camera) {
       frustum frustum;
       frustum.construct_from_view_matrix(camera.view_);
 

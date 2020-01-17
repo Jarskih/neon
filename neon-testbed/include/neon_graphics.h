@@ -151,7 +151,7 @@ namespace neon
 		bool create(glm::vec4 color, glm::vec3 direction);
 		glm::vec3 direction_;
 		glm::vec4 color_;
-		glm::mat4 projection_;
+		glm::mat4 projection_{1};
 
 	};
 

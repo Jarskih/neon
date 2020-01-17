@@ -91,10 +91,6 @@ namespace neon {
 		   return false;
 	   };
 
-	   if (!skybox_.create()) {
-		   return false;
-	   };
-
 	   // Planets
 	   sun_.position_ = glm::vec3(0, 0, 0);
 
@@ -132,19 +128,19 @@ namespace neon {
       }
 
 	  if (keyboard_.is_down(KEYCODE_UP)) {
-		  light_.direction_ = glm::vec3(light_.direction_.x + dt.as_seconds() * 2.0f, light_.direction_.y, light_.direction_.z);
+		  light_.direction_ = glm::vec3(light_.direction_.x + dt.as_seconds(), light_.direction_.y, light_.direction_.z);
 	  }
 
 	  if (keyboard_.is_down(KEYCODE_DOWN)) {
-		  light_.direction_ = glm::vec3(light_.direction_.x - dt.as_seconds() * 2.0f, light_.direction_.y, light_.direction_.z);
+		  light_.direction_ = glm::vec3(light_.direction_.x - dt.as_seconds(), light_.direction_.y, light_.direction_.z);
 	  }
 
 	  if (keyboard_.is_down(KEYCODE_LEFT)) {
-		  light_.direction_ = glm::vec3(light_.direction_.x, light_.direction_.y + dt.as_seconds() * 2.0f, light_.direction_.z);
+		  light_.direction_ = glm::vec3(light_.direction_.x, light_.direction_.y, light_.direction_.z + dt.as_seconds());
 	  }
 
 	  if (keyboard_.is_down(KEYCODE_RIGHT)) {
-		  light_.direction_ = glm::vec3(light_.direction_.x, light_.direction_.y - dt.as_seconds() * 2.0f, light_.direction_.z);
+		  light_.direction_ = glm::vec3(light_.direction_.x, light_.direction_.y, light_.direction_.z - dt.as_seconds());
 	  }
 
 	  if (keyboard_.is_down(KEYCODE_Q)) {

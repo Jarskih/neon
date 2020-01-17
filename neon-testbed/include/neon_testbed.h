@@ -42,10 +42,8 @@ namespace neon
 	  fps_camera camera_;
 	  directional_light light_;
 	  fps_camera_controller controller_;
-	  skybox skybox_;
 
 	  framebuffer framebuffer_;
-	  glm::mat4 world_ = glm::mat4(1);
 
 	  sphere earth_;
 	  sphere jupiter_;

@@ -572,7 +572,7 @@ namespace neon
 		vertices_.clear();
 	}
 
-	directional_light::directional_light() : color_(0), projection_(1), direction_(0)
+	directional_light::directional_light() : color_(0), direction_(0)
 	{
 	}
 

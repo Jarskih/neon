@@ -11,7 +11,7 @@ namespace neon {
 			glm::vec2 texcoord_;
 			glm::vec3 normal_;
 		};
-
+		
 		sphere();
 
 		bool create(std::string texture_filename, float radius, int stacks, int sectors, float orbit);
