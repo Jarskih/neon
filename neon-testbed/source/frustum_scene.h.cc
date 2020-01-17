@@ -3,7 +3,9 @@
 #include "neon_graphics.h"
 
 namespace neon {
-struct bounding_sphere {
+	struct fps_camera;
+
+	struct bounding_sphere {
    bounding_sphere();
    explicit bounding_sphere(const glm::vec3 &center, float radius);
 

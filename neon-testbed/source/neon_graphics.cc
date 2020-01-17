@@ -572,6 +572,60 @@ namespace neon
 		vertices_.clear();
 	}
 
+	frustum::frustum()
+	{
+	}
+
+    plane::plane(): normal_{}, d_{}
+	{
+	}
+
+   // source: https://www.gamedevs.org/uploads/fast-extraction-viewing-frustum-planes-from-world-view-projection-matrix.pdf
+   void frustum::construct_from_view_matrix(const glm::mat4 &view) {
+      // note: extract left plane
+      planes_[plane::PLANE_LEFT].normal_  = glm::vec3(view[0][3] + view[0][0],
+                                                      view[1][3] + view[1][0],
+                                                      view[2][3] + view[2][0]);
+      planes_[plane::PLANE_LEFT].d_       = view[3][3] + view[3][0];
+
+      // note: extract right plane
+      planes_[plane::PLANE_RIGHT].normal_ = glm::vec3(view[0][3] - view[0][0],
+                                                      view[1][3] - view[1][0],
+                                                      view[2][3] - view[2][0]);
+      planes_[plane::PLANE_RIGHT].d_      = view[3][3] - view[3][0];
+
+      // note: extract top plane
+      planes_[plane::PLANE_TOP].normal_   = glm::vec3(view[0][3] - view[0][1],
+                                                      view[1][3] - view[1][1],
+                                                      view[2][3] - view[2][1]);
+      planes_[plane::PLANE_TOP].d_        = view[3][3] - view[3][1];
+
+      // note: extract bottom plane
+      planes_[plane::PLANE_BOTTOM].normal_ = glm::vec3(view[0][3] + view[0][1],
+                                                       view[1][3] + view[1][1],
+                                                       view[2][3] + view[2][1]);
+      planes_[plane::PLANE_BOTTOM].d_     = view[3][3] + view[3][1];
+
+      // note: extract far plane
+      planes_[plane::PLANE_FAR].normal_   = glm::vec3(view[0][3] - view[0][2],
+                                                      view[1][3] - view[1][2],
+                                                      view[2][3] - view[2][2]);
+      planes_[plane::PLANE_FAR].d_        = view[3][3] - view[3][2];
+
+      // note: extract near plane
+      planes_[plane::PLANE_NEAR].normal_  = glm::vec3(view[0][2],
+                                                      view[1][2],
+                                                      view[2][2]);
+      planes_[plane::PLANE_NEAR].d_       = view[3][2];
+
+
+      for (int32 i = 0; i < plane::PLANE_COUNT; i++) {
+         float length = glm::length(planes_[i].normal_);
+         planes_[i].normal_ /= length;
+         planes_[i].d_ /= length;
+      }
+   }
+	
 	directional_light::directional_light() : color_(0), direction_(0)
 	{
 	}
@@ -581,6 +635,11 @@ namespace neon
 		color_ = color;
 		direction_ = direction;
 		return true;
+	}
+
+	void directional_light::update_projection(const frustum &frustum)
+	{
+		projection_ = glm::ortho(frustum.planes_[plane::PLANE_LEFT].d_, frustum.planes_[plane::PLANE_RIGHT].d_, frustum.planes_[plane::PLANE_BOTTOM].d_, frustum.planes_[plane::PLANE_TOP].d_, frustum.planes_[plane::PLANE_NEAR].d_, frustum.planes_[plane::PLANE_FAR].d_);
 	}
 
 	fps_camera::fps_camera() : 

@@ -39,12 +39,13 @@ namespace neon
 	  bitmap_font font_;
 	  bitmap_font signed_font_;
 
+   	  frustum frustum_;
 	  fps_camera camera_;
 	  directional_light light_;
 	  fps_camera_controller controller_;
 
 	  framebuffer framebuffer_;
-
+   	
 	  sphere earth_;
 	  sphere jupiter_;
 	  sphere saturn_;

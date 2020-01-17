@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 namespace neon
-{
+{	
 	struct vertex_buffer
 	{
 		vertex_buffer();
@@ -145,10 +145,38 @@ namespace neon
 		glm::mat4 projection_;
 	};
 
+	
+
+	struct plane {
+	   enum plane_type_id {
+	      PLANE_NEAR,
+	      PLANE_FAR,
+	      PLANE_LEFT,
+	      PLANE_RIGHT,
+	      PLANE_TOP,
+	      PLANE_BOTTOM,
+	      PLANE_COUNT,
+	   };
+
+		plane();
+
+		glm::vec3 normal_;
+		float d_;
+	};
+
+	struct frustum {
+		frustum();
+
+		void construct_from_view_matrix(const glm::mat4 &view);
+
+		plane planes_[plane::PLANE_COUNT];
+	};
+
 	struct directional_light {
 		directional_light();
 
 		bool create(glm::vec4 color, glm::vec3 direction);
+		void update_projection(const frustum &frustum);
 		glm::vec3 direction_;
 		glm::vec4 color_;
 		glm::mat4 projection_{1};

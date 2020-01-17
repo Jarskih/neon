@@ -92,12 +92,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="source\frustum_scene.h.cc" />
     <ClCompile Include="source\neon_framebuffer.cc" />
     <ClCompile Include="source\neon_graphics.cc" />
-    <ClCompile Include="source\neon_model.cc" />
     <ClCompile Include="source\neon_sphere.cpp" />
-    <ClCompile Include="source\neon_terrain.cc" />
     <ClCompile Include="source\neon_testbed.cc" />
   </ItemGroup>
   <ItemGroup>

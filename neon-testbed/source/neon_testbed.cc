@@ -114,7 +114,9 @@ namespace neon {
 	   }
 
 	   camera_.set_perspective(45.0f, 16.0f / 9.0f, 0.5f, 10000.0f);
-	   camera_.position_ = { 0, 0, 1000 };
+	   camera_.position_ = { 0, 0, 100 };
+
+	  frustum_.construct_from_view_matrix(camera_.view_);
 
       return true;
    }
@@ -154,6 +156,9 @@ namespace neon {
 
 	  // Update camera
 	  controller_.update(dt);
+   	
+   	 // frustum_.construct_from_view_matrix(camera_.view_);
+   	 // light_.update_projection(frustum_);
 
 	  // first pass
 	  framebuffer_.bind();
