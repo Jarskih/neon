@@ -46,7 +46,7 @@
     <OutDir>..\build\</OutDir>
     <IntDir>..\build\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName).$(PlatformShortName).$(Configuration.toLower())</TargetName>
-    <LibraryPath>C:\Programming\neon2\neon-testbed\external\imgui\examples\libs\glfw\lib-vc2010-64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\build\</OutDir>
